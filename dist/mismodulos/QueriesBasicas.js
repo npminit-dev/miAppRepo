@@ -118,10 +118,3 @@ AND ${ProductoID} = 153;`;
 // insertar/modificar puntuacion
 // debemos verificar si ya existe una puntuacion del usuario hacia el producto especificado
 const existeLaPuntuacion = (UsuarioID, ProductoID) => `SELECT Puntuacion FROM Puntuacion WHERE UsuarioID = ${UsuarioID} AND ProductoID = ${ProductoID};`;
-// si no existe (porque la consulta anterior devolvio consulta vacia) lo insertamos:
-const insertarPuntuacion = (UsuarioID, ProductoID, Puntuacion) => `
-BEGIN;
-INSERT INTO Puntuacion (UsuarioID, ProductoID, Puntuacion, FechaEmision, ComentarioID) VALUES 
-(${UsuarioID}, ${ProductoID}, ${Puntuacion}, CURDATE(), NULL);
-COMMIT;`;
-// si existe, modificamos:

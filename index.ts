@@ -3,10 +3,12 @@ import dotenv from 'dotenv';
 import express from 'express'
 import { productosPorDefecto } from './mismodulos/ConsultasFuncts';
 import { prod } from './interfaces/Interfaces';
+import cors from "cors";
 
 const app = express()
 
 dotenv.config({path: 'var_entorno.env'})
+app.use(cors())
 
 app.get('/', (req: Request, res: Response) => {
   res.send('this is the home page')
