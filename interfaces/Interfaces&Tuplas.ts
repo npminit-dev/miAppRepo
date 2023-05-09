@@ -19,6 +19,7 @@ export interface prodYImgs {
 }
 
 export interface reseña {
+  ProductoID: number;
   AliasUsuario: number;
   Puntuacion: number;
   Cuerpo: number;
@@ -47,3 +48,25 @@ export interface misDatos {
   Telefono: string;
   FechaDeRegistro: Date;
 }
+
+export interface existeAlias {
+  AliasUsuario: string;
+}
+
+export interface existeElMail {
+  Email: string
+}
+
+export interface datosRegistro {
+  Alias: string,
+  Nombres: string,
+  Apellido: string,
+  FechaNac: string,
+  edad: number,
+  email: string,
+  telefono: string,
+  contraseña: string
+}
+
+
+
