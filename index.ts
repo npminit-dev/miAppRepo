@@ -1,10 +1,9 @@
 import {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
-import { prodsPorDefecto, prodsPorNombreAsc, revertirFecha, prodsPorPrecioDesc, prodsPorPrecioAsc, prodsPorCatDesc, prodsPorCatAsc, existeElAlias, existeElMail, obtenerFechaActual, registrar, reseñasAsc, reseñasDesc } from './mismodulos/ConsultasFuncts';
-import { datosRegistro, prod } from './interfaces/Interfaces&Tuplas';
 import cors from "cors";
-import queries from './mismodulos/Queries'
+import { iniciarSesion, prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail } from './mismodulos/consultasFuncts';
+import { verificarYDecodificarJWT } from './mismodulos/utilidades';
 
 const app = express()
 
@@ -13,23 +12,78 @@ app.use(cors()) // modo cors
 
 app.get('/', (req: Request, res: Response) => {
   res.send('this is the home page')
-})
+});
+
+// TESTING
+
+// prodsPorDefecto:
+// prodsPorDefecto()
+//   .then(resultado => console.log(resultado))
+
+// prodsPorNombreAsc
+// prodsPorNombreAsc()
+//   .then(resultado => console.log(resultado))
+
+// prodsPorPrecioAsc
+// prodsPorPrecioAsc()
+//   .then(resultado => console.log(resultado))
+
+// prodsPorPrecioDesc
+// prodsPorPrecioDesc()
+//   .then(resultado => console.log(resultado))
+
+// prodsPorCatAsc
+// prodsPorCatAsc()
+//   .then(resultado => console.log(resultado))
+
+// prodsPorCatDesc
+// prodsPorCatDesc()
+//   .then(resultado => console.log(resultado))
+
+// reseñasAsc()
+// reseñasAsc(152) 
+//   .then(resultado => console.log(resultado))
+
+// reseñasDesc()
+// reseñasDesc(153)
+//   .then(resultado => console.log(resultado))
+
+// existeElAlias() (si existe devolvera la promesa rechazada, por lo que debemos capturar el error con un .catch() en el caso de usar la sintaxis de then
+// o con un try/catch en caso de usar async/await)
+// En TypeScript, puedes crear una función flecha ejecutada inmediatamente (también conocida como IIFE, Immediately Invoked Function Expression) utilizando el siguiente formato:
+// (async () => {
+//   try{
+//     let resultado = await existeElAlias('NicoTheKing');
+//     console.log(resultado)
+//   } catch (err) {
+//     console.log(err)
+//   }
+// })();
+
+// existeElMail()
+// ( async () => {
+//   try {
+//     let resultado = await existeElMail('Abaddd@gmail.com')
+//     console.log(resultado)
+//   } catch (err) {
+//     console.log(err)
+//   }
+// })();
+
+  
 
 
-// Alias: string, Nombres: string, Apellido: string, FechaNac: string, Edad: number, Email: string, Telefono: string, ContraseñaHasheada: string
-let reqbody: datosRegistro = {
-  Alias: 'monikkkkk',
-  Nombres: 'Monica Belen',
-  Apellido: 'Argento',
-  FechaNac: '13-8-1990',
-  edad: 33,
-  email: 'monikakapa@hotmail.com',
-  telefono: '+541176839009',
-  contraseña: 'mimoniquitalaloquita'
-}
 
-reseñasAsc(153)
-  .then((result: any) => console.log(result))
+// en este ejemplo se inicia sesion con alias y contraseña usando la funcion iniciarSesion(), si esta es correcta se devuelve el JWT, 
+// encadenandola con verificarJWT esta verifica la validez del token, lo decodifica y lo devuelve
+// iniciarSesion('NicoTheKing', 'NicolasElCapo')
+// .then(result => {
+//   console.log(result) // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjEsIkFsaWFzVXN1YXJpbyI6Ik5pY29UaGVLaW5nIiwiTm9tYnJlcyI6Ik5pY29sYXMgQWxhbiIsIkFwZWxsaWRvIjoiRmVybmFuZGV6IiwiaWF0IjoxNjgzNjU2MzY2LCJleHAiOjE2ODQ5NTIzNjZ9.-hXyZb25WREyoaOhMWOVe2ld94w_-HT8VLV1nZVKDMU
+//   return verificarYDecodificarJWT('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjEsIkFsaWFzVXN1YXJpbyI6Ik5pY29UaGVLaW5nIiwiTm9tYnJlcyI6Ik5pY29sYXMgQWxhbiIsIkFwZWxsaWRvIjoiRmVybmFuZGV6IiwiaWF0IjoxNjgzNjU2MzY2LCJleHAiOjE2ODQ5NTIzNjZ9.-hXyZb25WREyoaOhMWOVe2ld94w_-HT8VLV1nZVKDMU')
+// })
+// .then(jwtdata => console.log(jwtdata))
+// .catch(err => console.log(err))
+
 
 app.listen(process.env.PORT || 3000)
-console.log(`App Express escuchando en el puerto ${process.env.PORT || 3000}`)
+console.log(`App Express escuchando en el puerto ${process.env.PORT || 3000}`) 

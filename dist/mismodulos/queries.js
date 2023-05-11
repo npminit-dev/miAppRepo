@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const prodsPorDefecto = 'SELECT p.ProductoID, CategoriaID, NombreProducto, Precio, Descripcion, Imagen, Imagen_Hover, Miniatura, Miniatura_Hover FROM Producto p, Producto_Imagenes p_img WHERE p.ProductoID = p_img.ProductoID;';
+const prodsPorDefecto = 'SELECT p.ProductoID, CategoriaID, NombreProducto, Precio, Descripcion FROM Producto p, Producto_Imagenes p_img WHERE p.ProductoID = p_img.ProductoID;';
 const prodsPorNombreAsc = 'SELECT p.ProductoID, CategoriaID, NombreProducto, Precio, Descripcion, Imagen, Imagen_Hover, Miniatura, Miniatura_Hover FROM Producto p INNER JOIN Producto_Imagenes pi ON p.ProductoID = pi.ProductoID ORDER BY NombreProducto ASC;';
 const prodsPorNombreDesc = 'SELECT p.ProductoID, CategoriaID, NombreProducto, Precio, Descripcion, Imagen, Imagen_Hover, Miniatura, Miniatura_Hover FROM Producto p INNER JOIN Producto_Imagenes pi ON p.ProductoID = pi.ProductoID ORDER BY NombreProducto DESC;';
 const prodsPorPrecioAsc = 'SELECT p.ProductoID, CategoriaID, NombreProducto, Precio, Descripcion, Imagen, Imagen_Hover, Miniatura, Miniatura_Hover FROM Producto p INNER JOIN Producto_Imagenes pi ON p.ProductoID = pi.ProductoID ORDER BY Precio ASC;';

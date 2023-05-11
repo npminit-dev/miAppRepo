@@ -26,7 +26,7 @@ export interface reseña {
   FechaEmision: Date;
 }
 
-export interface jwtCreacion {
+export interface jwt {
   UsuarioID: number;
   AliasUsuario: string;
   Nombres: string;
@@ -66,6 +66,11 @@ export interface datosRegistro {
   email: string,
   telefono: string,
   contraseña: string
+}
+
+export interface usuarioBasico {
+  UsuarioID: string,
+  Contraseña: string
 }
 
 
