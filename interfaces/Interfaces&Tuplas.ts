@@ -62,10 +62,10 @@ export interface datosRegistro {
   Nombres: string,
   Apellido: string,
   FechaNac: string,
-  edad: number,
-  email: string,
-  telefono: string,
-  contraseña: string
+  Edad: number,
+  Email: string,
+  Telefono: string,
+  Contraseña: string
 }
 
 export interface usuarioBasico {
@@ -73,5 +73,4 @@ export interface usuarioBasico {
   Contraseña: string
 }
 
-
-
+export type tuplaNuevosDatos = [string, string, string, string, number, string, string]

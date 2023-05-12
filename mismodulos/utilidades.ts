@@ -1,7 +1,7 @@
 import mysql, { Connection } from 'mysql'
 import bcrypt from 'bcrypt';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken'
-import { jwt, prod, prodYImgs, reseña } from '../interfaces/interfaces&Tuplas';
+import { datosRegistro, jwt, prod, prodYImgs, reseña, usuarioBasico } from '../interfaces/interfaces&Tuplas';
 
 export function crearConexionDB(multiple?: string) : Connection {
   return mysql.createConnection({
@@ -13,7 +13,7 @@ export function crearConexionDB(multiple?: string) : Connection {
   });
 }
 
-export async function SQLQuery(conexion: Connection, consulta: string): Promise<Array<prod|prodYImgs|reseña>>{
+export async function SQLQuery(conexion: Connection, consulta: string): Promise<any> {
   return new Promise((res, rej) => {
     conexion.query(consulta, (err, resultado) => {
       if(err) rej(err)
@@ -71,4 +71,4 @@ export function revertirFecha(fecha:string): string{
   return check.join('-')
 }
 
-export const quitarReferencia = (arreglo: Array<any|prod|prodYImgs>) : Array<any|prod|prodYImgs> => arreglo.map((elem): any => { return {...elem} })
+export const quitarReferencia = (arreglo: Array<any|prod|prodYImgs|datosRegistro|usuarioBasico>) : Array<any|prod|prodYImgs|datosRegistro|usuarioBasico> => arreglo.map((elem): any => { return {...elem} })

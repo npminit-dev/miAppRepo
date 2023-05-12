@@ -65,7 +65,7 @@ FROM Usuario WHERE AliasUsuario = '${AliasUsuario}';`;
 // una vez creado el JWT, lo usamos para hacer el resto de consultas:
 // obtener mis datos
 const misDatos = (UsuarioID, AliasUsuario, Nombres, Apellido) => `
-SELECT Nombres, Apellido, FechaDeNacimiento, Edad, EMail, Telefono, FechaDeRegistro FROM Usuario 
+SELECT Nombres, Apellido, FechaDeNacimiento, Edad, EMail, Telefono, FechaDeRegistro FROM Usuario us
 WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}' AND us.Apellido = '${Apellido}';`;
 // modificar mis datos
 // debemos reutilizar las funciones existeElAlias() y existeElMail() para verificar si el nuevo alias y el nuevo mail estan disponibles
@@ -91,7 +91,7 @@ SELECT SUM(carr_det.Cantidad * p.Precio) Total_Carrito FROM Usuario us
 RIGHT JOIN Carrito carr ON us.UsuarioID = carr.UsuarioID
 RIGHT JOIN Carrito_Detalles carr_det ON carr.CarritoID = carr_det.CarritoID
 LEFT JOIN Producto p ON p.ProductoID = carr_det.ProductoID
-WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}' AND us.Apellido = '${Apellido}';
+WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}' AND us.Apellido = '${Apellido}'
 GROUP BY us.UsuarioID, carr.CarritoID;`;
 // agregar producto al carrito
 const agregarAlCarrito = (UsuarioID, ProductoID, Cantidad) => `

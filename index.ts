@@ -2,8 +2,10 @@ import {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
 import cors from "cors";
-import { iniciarSesion, prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail } from './mismodulos/consultasFuncts';
-import { verificarYDecodificarJWT } from './mismodulos/utilidades';
+import { prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail, registrar, iniciarSesion, obtenerMisDatos, modificarMisDatos, obtenerTotalCarrito } from './mismodulos/consultasFuncts';
+import { SQLQuery, verificarYDecodificarJWT, crearConexionDB, revertirFecha } from './mismodulos/utilidades';
+import { datosRegistro, tuplaNuevosDatos, misDatos } from './interfaces/interfaces&Tuplas';
+import queries from './mismodulos/queries';
 
 const app = express()
 
@@ -70,19 +72,94 @@ app.get('/', (req: Request, res: Response) => {
 //   }
 // })();
 
-  
+// registrar() creamos un objeto (haciendo las veces de)
+// const datos: datosRegistro = {
+//   Alias: 'monikkkk',
+//   Nombres: 'Monica Lucia', 
+//   Apellido: 'Gonzalez', 
+//   FechaNac: '14-08-1993', 
+//   Edad: 33, 
+//   Email: 'monicaLuciAAA@gmail.com', 
+//   Telefono: '+5411326577', 
+//   Contraseña: 'moniquitalaloquita'
+// };
+
+// (async () => {
+//   try{
+//     let fueExitoso = await registrar(datos);
+//     console.log(fueExitoso)
+//   } catch(err){
+//     console.log(err)
+//   }
+// })();
 
 
-
+// iniciarSesion()
 // en este ejemplo se inicia sesion con alias y contraseña usando la funcion iniciarSesion(), si esta es correcta se devuelve el JWT, 
 // encadenandola con verificarJWT esta verifica la validez del token, lo decodifica y lo devuelve
-// iniciarSesion('NicoTheKing', 'NicolasElCapo')
-// .then(result => {
-//   console.log(result) // eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjEsIkFsaWFzVXN1YXJpbyI6Ik5pY29UaGVLaW5nIiwiTm9tYnJlcyI6Ik5pY29sYXMgQWxhbiIsIkFwZWxsaWRvIjoiRmVybmFuZGV6IiwiaWF0IjoxNjgzNjU2MzY2LCJleHAiOjE2ODQ5NTIzNjZ9.-hXyZb25WREyoaOhMWOVe2ld94w_-HT8VLV1nZVKDMU
-//   return verificarYDecodificarJWT('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjEsIkFsaWFzVXN1YXJpbyI6Ik5pY29UaGVLaW5nIiwiTm9tYnJlcyI6Ik5pY29sYXMgQWxhbiIsIkFwZWxsaWRvIjoiRmVybmFuZGV6IiwiaWF0IjoxNjgzNjU2MzY2LCJleHAiOjE2ODQ5NTIzNjZ9.-hXyZb25WREyoaOhMWOVe2ld94w_-HT8VLV1nZVKDMU')
-// })
-// .then(jwtdata => console.log(jwtdata))
-// .catch(err => console.log(err))
+
+// (async () => {
+//   try{
+//     console.log('holaaaa')
+//     let jsonwebt = await iniciarSesion('NicoTheKing', 'NicolasElCapo')
+//     if(!jsonwebt) jsonwebt = ''
+//     console.log(jsonwebt)
+//     let decodificado = await verificarYDecodificarJWT(jsonwebt)
+//     console.log(decodificado)
+//   } catch(err) {
+//     console.log(err) 
+//   }
+// })(); 
+
+const jwtdecodificado = { // ahora usaremos este jwt decodificado para las siguientes consultas
+  UsuarioID: 1,
+  AliasUsuario: 'NicoTheFuckingKing2',
+  Nombres: 'Nicolas Ricardo',
+  Apellido: 'Gonzalez',
+  iat: 1683916048,
+  exp: 1685212048 
+};
+
+
+// obtener mis datos
+// (async() => {
+//   try{
+//     let datos = await obtenerMisDatos(jwtdecodificado);
+//     console.log(datos)
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })();
+
+
+// modificar datos
+// datos nuevos:
+// const datosNuevos: tuplaNuevosDatos = ['NicoTheFuckingKing2', 'Nicolas Ricardo', 'Gonzalez', '23-02-1995', 31, 'NicoThecapoo@gmail.com', '431-1123-111'];
+// datosNuevos[3] = revertirFecha(datosNuevos[3]);
+
+// (async() => {
+//   try {
+//     let resultado = await modificarMisDatos(jwtdecodificado, datosNuevos); // esto devolvera un nuevo JWT que represente los datos cambiados
+//     console.log(resultado); 
+//     if(!resultado) resultado = ''
+//     let decoded = await verificarYDecodificarJWT(resultado) // lo decodificamos para verificar que los datos se aplicaron
+//     console.log(decoded)
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })()
+
+// // obtener total del carrito
+// (async() => {
+//   try{
+//     let total = await obtenerTotalCarrito(jwtdecodificado)
+//     console.log(total)
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })() 
+
+
 
 
 app.listen(process.env.PORT || 3000)

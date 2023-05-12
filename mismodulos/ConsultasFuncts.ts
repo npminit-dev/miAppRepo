@@ -3,14 +3,14 @@ import dotenv from 'dotenv';
 
 import queries from './queries'
 import { chequearHash, crearJWT, hashearContraseña, revertirFecha, crearConexionDB, SQLQuery, quitarReferencia } from './utilidades';
-import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail } from '../interfaces/interfaces&Tuplas';
+import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail, misDatos, tuplaNuevosDatos } from '../interfaces/interfaces&Tuplas';
 
 dotenv.config({path: '../var_entorno.env'})
 
 export function prodsPorDefecto(): Promise<prod[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorDefecto);
       conexion.end()
@@ -24,7 +24,7 @@ export function prodsPorDefecto(): Promise<prod[]>{
 export function prodsPorNombreAsc(): Promise<prodYImgs[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorNombreAsc);
       conexion.end()
@@ -38,7 +38,7 @@ export function prodsPorNombreAsc(): Promise<prodYImgs[]>{
 export function prodsPorNombreDesc(): Promise<prodYImgs[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorNombreDesc);
       conexion.end()
@@ -52,7 +52,7 @@ export function prodsPorNombreDesc(): Promise<prodYImgs[]>{
 export function prodsPorPrecioAsc(): Promise<prodYImgs[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorPrecioAsc);
       conexion.end()
@@ -66,7 +66,7 @@ export function prodsPorPrecioAsc(): Promise<prodYImgs[]>{
 export function prodsPorPrecioDesc(): Promise<prodYImgs[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorPrecioDesc);
       conexion.end()
@@ -80,7 +80,7 @@ export function prodsPorPrecioDesc(): Promise<prodYImgs[]>{
 export function prodsPorCatAsc(): Promise<prodYImgs[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorCatAsc);
       conexion.end()
@@ -94,7 +94,7 @@ export function prodsPorCatAsc(): Promise<prodYImgs[]>{
 export function prodsPorCatDesc(): Promise<prodYImgs[]>{
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect()
       let resultadoConsulta: Array<Object> = await SQLQuery(conexion, queries.prodsPorCatDesc);
       conexion.end()
@@ -105,24 +105,10 @@ export function prodsPorCatDesc(): Promise<prodYImgs[]>{
   })
 }
 
-// export function reseñasAsc(productoID: number) : Promise<reseña[]|string> {
-//   return new Promise((res, rej): void => {
-//     let conexion = crearConexionDB();
-//     conexion.connect();
-//     conexion.query(queries.reseñasAsc(productoID), 
-//     (err: Error, result: Array<reseña>) => {
-//       conexion.end()
-//       if(err) rej(err)
-//       if(!result.length) res('no hay sobre este producto... aun!')
-//       res(result.map(elem => { return {...elem} }))
-//     })
-//   })
-// }
-
 export function reseñasAsc(ProductoID: number): Promise<reseña[]|string> {
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect();
       let resultadoConsulta = await SQLQuery(conexion, queries.reseñasAsc(ProductoID))
       conexion.end();
@@ -137,7 +123,7 @@ export function reseñasAsc(ProductoID: number): Promise<reseña[]|string> {
 export function reseñasDesc(ProductoID: number): Promise<reseña[]|string> {
   return new Promise(async (res, rej) => {
     try {
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect();
       let resultadoConsulta = await SQLQuery(conexion, queries.reseñasDesc(ProductoID))
       conexion.end();
@@ -152,9 +138,10 @@ export function reseñasDesc(ProductoID: number): Promise<reseña[]|string> {
 export async function existeElAlias(aliasAComropbar: string): Promise<boolean>{
   return new Promise(async (res, rej) => {
     try{
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect();
       let consultaResultado = await SQLQuery(conexion, queries.existeElAlias(aliasAComropbar))
+      conexion.end();
       if(consultaResultado.length) rej(true)
       res(false)
     } catch(err){
@@ -166,9 +153,10 @@ export async function existeElAlias(aliasAComropbar: string): Promise<boolean>{
 export async function existeElMail(mailAComprobar: string): Promise<boolean>{
   return new Promise(async (res, rej) => {
     try{
-      let conexion: Connection = crearConexionDB();
+      const conexion: Connection = crearConexionDB();
       conexion.connect();
       let consultaResultado = await SQLQuery(conexion, queries.existeElMail(mailAComprobar))
+      conexion.end();
       if(consultaResultado.length) rej(true)
       res(false)
     } catch(err){
@@ -177,43 +165,86 @@ export async function existeElMail(mailAComprobar: string): Promise<boolean>{
   })
 }
 
-export function registrar(datos: datosRegistro): Promise<string> {
-  return new Promise((res, rej) => {
-    let conexion: Connection = crearConexionDB('multiple');
-    conexion.connect();
-    hashearContraseña(datos.contraseña)
-    .then(hasheada => {
-      conexion.query(queries.registrar(datos.Alias, datos.Nombres, datos.Apellido, revertirFecha(datos.FechaNac), 
-      datos.edad, datos.email, datos.telefono, hasheada),
-      (err: Error|null, result: any): void => {
-        conexion.end();
-        if(err) rej('registro incorrecto') // si el usuario ya se encontraba, entonces devolvera que la subquerie devolvio mas de una columna 
-        res('registro correcto')
-      })
-    })
+export async function registrar(datos: datosRegistro): Promise<string> {
+  return new Promise(async (res, rej) => {
+    try{
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      let hash: string = await hashearContraseña(datos.Contraseña);
+      let resultadoConsulta = await SQLQuery(conexion, queries.registrar(datos.Alias, datos.Nombres, datos.Apellido, revertirFecha(datos.FechaNac),
+      datos.Edad, datos.Email, datos.Telefono, hash));
+      conexion.end();
+      res('registro correcto');
+    } catch (err) {
+      rej(`Error en la ejecucion de registrar: ${err}`);
+    }
   })
 }
 
-export function iniciarSesion(aliasUsuario: string, contraseña: string): Promise<jwt|string|undefined> {
-  return new Promise((res, _rej) => {
-    let conexion = crearConexionDB();
-    conexion.connect();
-    conexion.query(queries.existeElUsuario(aliasUsuario),
-    (err: Error, resultado: Array<usuarioBasico>) => {
-      if(err) throw new Error('error al realizar la querie que comprueba que existe el usuario y devuelve el id y contraseña')
-      if(resultado.length === 0 || resultado.length > 1) throw new Error('no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)')
-      chequearHash(contraseña, resultado[0].Contraseña)
-      .then(escorrecta => {
-        if(!escorrecta) throw new Error('el usuario existe, pero la contraseña es invalida')
-        conexion.query(queries.devolverJWTData(aliasUsuario),
-        (err: Error, resultado: Array<jwt>) => {
-          if(err) throw new Error('error al realizar la querie que devuelve los datos del jwt recibiendo el alias del usuario')
-          let datos: jwt = resultado.map((elem: any) => {return {...elem}})[0]
-          crearJWT(datos)
-          .then(jwtstring => res(jwtstring))
-        }) 
-      })
-    })
+export async function iniciarSesion(aliasUsuario: string, contraseña: string): Promise<string|undefined> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB();
+      conexion.connect();
+      let resultado = await SQLQuery(conexion, queries.existeElUsuario(aliasUsuario))
+      if(resultado.length === 0 || resultado.length > 1) throw new Error('no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
+      let esCorrecta: boolean = await chequearHash(contraseña, resultado[0].Contraseña);
+      if(!esCorrecta) throw new Error('el usuario existe, pero la contraseña es invalida');
+      let jwtdatos: jwt[] = await SQLQuery(conexion, queries.devolverJWTData(aliasUsuario));
+      jwtdatos = quitarReferencia(jwtdatos);
+      let jwtcodificado = crearJWT(jwtdatos[0]);
+      conexion.end();
+      res(jwtcodificado);
+    } catch (err){
+      rej(`Error en la ejecucion de iniciarSesion:${err}`)
+    }
   })
 }
 
+// ahora debemos usar el jwt para estas funciones, debemos pasarlo como parametros ya decodificado:
+
+export async function obtenerMisDatos(datos: jwt): Promise<misDatos>{
+  return new Promise(async (res, rej) => {
+    try{
+      const conexion: Connection = crearConexionDB();
+      conexion.connect();
+      let resultado = await SQLQuery(conexion, queries.misDatos(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido))
+      conexion.end();
+      resultado = quitarReferencia(resultado)
+      res(resultado)
+    } catch(err) {
+      rej(`Error en la ejecucion de obtenerMisDatos: ${err}`)
+    }
+  })
+}
+
+export async function modificarMisDatos(datos: jwt, nuevosDatos: tuplaNuevosDatos): Promise<string|undefined> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.modificarMisDatos(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido, ...nuevosDatos))
+      conexion.end();
+      let newJwtData: jwt = { UsuarioID: datos.UsuarioID, AliasUsuario: nuevosDatos[0], Nombres: nuevosDatos[1], Apellido: nuevosDatos[2] }
+      let newjwt = await crearJWT(newJwtData);
+      res(newjwt);
+    } catch (err) {
+      rej(`Error en la ejecucion de modificarMisDatos: ${err}`)
+    }
+  })
+}
+
+export async function obtenerTotalCarrito(datos: jwt): Promise<number> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      let total = await SQLQuery(conexion, queries.totalMiCarrito(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido))
+      total = quitarReferencia(total)
+      conexion.end();
+      res(total[0].Total_Carrito)
+    } catch(err){
+      rej(err)
+    }
+  })
+}
