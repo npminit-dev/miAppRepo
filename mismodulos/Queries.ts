@@ -127,7 +127,7 @@ WHERE carr.UsuarioID = ${UsuarioID};
 COMMIT;`
 
 // actualizar ultima fecha de modificacion del carrito
-const actualizarFechaModCarrito = (UsuarioID: string): string => `
+const actualizarFechaModCarrito = (UsuarioID: number): string => `
 UPDATE Carrito SET UltimaModificacion = NOW()
 WHERE UsuarioID = ${UsuarioID};`
 
@@ -153,9 +153,9 @@ INSERT INTO Puntuacion (UsuarioID, ProductoID, Puntuacion, FechaEmision, Comenta
 COMMIT;`
 
 // si existe, modificamos:
-const modificarPuntuacion = (UsuarioID: number, ProductoID: number): string => `
+const modificarPuntuacion = (UsuarioID: number, ProductoID: number, Puntuacion: number): string => `
 BEGIN;
-UPDATE Puntuacion punt SET Puntuacion = 2, FechaEmision = CURDATE()
+UPDATE Puntuacion punt SET Puntuacion = ${Puntuacion}, FechaEmision = CURDATE()
 WHERE punt.UsuarioID = ${UsuarioID} AND ProductoID = ${ProductoID};
 COMMIT;`
 

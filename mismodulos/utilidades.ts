@@ -1,7 +1,7 @@
 import mysql, { Connection } from 'mysql'
 import bcrypt from 'bcrypt';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken'
-import { datosRegistro, jwt, prod, prodYImgs, reseña, usuarioBasico } from '../interfaces/interfaces&Tuplas';
+import { carrito, datosRegistro, jwt, prod, prodYImgs, reseña, usuarioBasico } from '../interfaces/interfaces&Tuplas';
 
 export function crearConexionDB(multiple?: string) : Connection {
   return mysql.createConnection({
@@ -71,4 +71,4 @@ export function revertirFecha(fecha:string): string{
   return check.join('-')
 }
 
-export const quitarReferencia = (arreglo: Array<any|prod|prodYImgs|datosRegistro|usuarioBasico>) : Array<any|prod|prodYImgs|datosRegistro|usuarioBasico> => arreglo.map((elem): any => { return {...elem} })
+export const quitarReferencia = (arreglo: Array<any>) : Array<any> => arreglo.map((elem): any => { return {...elem} })

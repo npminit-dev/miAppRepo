@@ -33,12 +33,6 @@ export interface jwt {
   Apellido: string;
 }
 
-export interface carritoUsuario {
-  ProductoID: number;
-  NombreProducto: string,
-  Cantidad: number;
-}
-
 export interface misDatos {
   Nombres: string;
   Apellido: string;
@@ -73,4 +67,20 @@ export interface usuarioBasico {
   Contraseña: string
 }
 
+export interface carrito {
+  ProductoID: number, 
+  NombreProducto: string,
+  PrecioXUnidad: number,
+  Cantidad: number
+}
+
 export type tuplaNuevosDatos = [string, string, string, string, number, string, string]
+
+export interface puntuacion {
+  Puntuacion: number
+}
+
+export interface validacionComentario {
+  Comentario?: string | null,
+  UsuarioID?: number
+}

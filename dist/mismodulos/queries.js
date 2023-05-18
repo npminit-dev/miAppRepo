@@ -130,9 +130,9 @@ INSERT INTO Puntuacion (UsuarioID, ProductoID, Puntuacion, FechaEmision, Comenta
 (${UsuarioID}, ${ProductoID}, ${Puntuacion}, CURDATE(), NULL);
 COMMIT;`;
 // si existe, modificamos:
-const modificarPuntuacion = (UsuarioID, ProductoID) => `
+const modificarPuntuacion = (UsuarioID, ProductoID, Puntuacion) => `
 BEGIN;
-UPDATE Puntuacion punt SET Puntuacion = 2, FechaEmision = CURDATE()
+UPDATE Puntuacion punt SET Puntuacion = ${Puntuacion}, FechaEmision = CURDATE()
 WHERE punt.UsuarioID = ${UsuarioID} AND ProductoID = ${ProductoID};
 COMMIT;`;
 // insertar/modificar comentario

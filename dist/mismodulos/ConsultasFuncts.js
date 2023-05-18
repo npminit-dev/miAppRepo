@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.obtenerTotalCarrito = exports.modificarMisDatos = exports.obtenerMisDatos = exports.iniciarSesion = exports.registrar = exports.existeElMail = exports.existeElAlias = exports.reseñasDesc = exports.reseñasAsc = exports.prodsPorCatDesc = exports.prodsPorCatAsc = exports.prodsPorPrecioDesc = exports.prodsPorPrecioAsc = exports.prodsPorNombreDesc = exports.prodsPorNombreAsc = exports.prodsPorDefecto = void 0;
+exports.modificarComentario = exports.insertarComentario = exports.validacionComentario = exports.modificarPuntuacion = exports.insertarPuntuacion = exports.existeLaPuntuacion = exports.miReseña = exports.actualizarFechaModCarrito = exports.vaciarCarrito = exports.agregarAlCarrito = exports.obtenerTotalCarrito = exports.miCarrito = exports.modificarMisDatos = exports.obtenerMisDatos = exports.iniciarSesion = exports.registrar = exports.existeElMail = exports.existeElAlias = exports.reseñasDesc = exports.reseñasAsc = exports.prodsPorCatDesc = exports.prodsPorCatAsc = exports.prodsPorPrecioDesc = exports.prodsPorPrecioAsc = exports.prodsPorNombreDesc = exports.prodsPorNombreAsc = exports.prodsPorDefecto = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const queries_1 = __importDefault(require("./queries"));
 const utilidades_1 = require("./utilidades");
@@ -220,10 +220,10 @@ function iniciarSesion(aliasUsuario, contraseña) {
                 conexion.connect();
                 let resultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeElUsuario(aliasUsuario));
                 if (resultado.length === 0 || resultado.length > 1)
-                    throw new Error('no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
+                    throw new Error('Error en la ejecucion de iniciarSesion: no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
                 let esCorrecta = yield (0, utilidades_1.chequearHash)(contraseña, resultado[0].Contraseña);
                 if (!esCorrecta)
-                    throw new Error('el usuario existe, pero la contraseña es invalida');
+                    throw new Error('Error en la ejecucion de iniciarSesion: el usuario existe, pero la contraseña es invalida');
                 let jwtdatos = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.devolverJWTData(aliasUsuario));
                 jwtdatos = (0, utilidades_1.quitarReferencia)(jwtdatos);
                 let jwtcodificado = (0, utilidades_1.crearJWT)(jwtdatos[0]);
@@ -275,6 +275,24 @@ function modificarMisDatos(datos, nuevosDatos) {
     });
 }
 exports.modificarMisDatos = modificarMisDatos;
+function miCarrito(datos) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)();
+                conexion.connect();
+                let carrito = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.miCarrito(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido));
+                conexion.end();
+                carrito = (0, utilidades_1.quitarReferencia)(carrito);
+                res(carrito);
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de miCarrito: ${err}`);
+            }
+        }));
+    });
+}
+exports.miCarrito = miCarrito;
 function obtenerTotalCarrito(datos) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
@@ -282,14 +300,206 @@ function obtenerTotalCarrito(datos) {
                 const conexion = (0, utilidades_1.crearConexionDB)('multiple');
                 conexion.connect();
                 let total = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.totalMiCarrito(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido));
+                if (!total.length)
+                    res(0.0);
                 total = (0, utilidades_1.quitarReferencia)(total);
                 conexion.end();
                 res(total[0].Total_Carrito);
             }
             catch (err) {
-                rej(err);
+                rej(`Error en la ejecucion de obtenerTotalCarrito: ${err}`);
             }
         }));
     });
 }
 exports.obtenerTotalCarrito = obtenerTotalCarrito;
+function agregarAlCarrito(datos, productoID, cantidad) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.agregarAlCarrito(datos.UsuarioID, productoID, cantidad));
+                conexion.end();
+                res('agregado');
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de agregarAlCarrito: ${err}`);
+            }
+        }));
+    });
+}
+exports.agregarAlCarrito = agregarAlCarrito;
+function vaciarCarrito(datos) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.vaciarMiCarrito(datos.UsuarioID));
+                conexion.end();
+                res('vaciado');
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de vaciarCarrito: ${err}`);
+            }
+        }));
+    });
+}
+exports.vaciarCarrito = vaciarCarrito;
+function actualizarFechaModCarrito(datos) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)();
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.actualizarFechaModCarrito(datos.UsuarioID));
+                conexion.end();
+                res('fecha de modificacion del carrito actualizada');
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de actualizarFechaModCarrito: ${err}`);
+            }
+        }));
+    });
+}
+exports.actualizarFechaModCarrito = actualizarFechaModCarrito;
+function miReseña(datos, productoID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)();
+                conexion.connect();
+                let reseña = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.miReseña(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido, productoID));
+                reseña = (0, utilidades_1.quitarReferencia)(reseña);
+                if (reseña.length === 0)
+                    res('el usuario no ha reseñado el producto');
+                if (reseña.length > 1)
+                    throw new Error('se ha devuelto mas de 1 reseña (y eso es malo)');
+                conexion.end();
+                res(reseña[0]);
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de miReseña: ${err}`);
+            }
+        }));
+    });
+}
+exports.miReseña = miReseña;
+function existeLaPuntuacion(datos, productoID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)();
+                conexion.connect();
+                let resultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeLaPuntuacion(datos.UsuarioID, productoID));
+                resultado = (0, utilidades_1.quitarReferencia)(resultado);
+                conexion.end();
+                if (!resultado.length)
+                    res(false);
+                if (resultado.length > 1)
+                    throw new Error('se ha devuelto mas de una puntuacion del usuario con respecto al producto');
+                else
+                    res(true);
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de existeLaPuntuacion: ${err}`);
+            }
+        }));
+    });
+}
+exports.existeLaPuntuacion = existeLaPuntuacion;
+function insertarPuntuacion(datos, productoID, puntuacion) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.insertarPuntuacion(datos.UsuarioID, productoID, puntuacion));
+                conexion.end();
+                res('puntuacion añadida');
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de insertarPuntuacion: ${err}`);
+            }
+        }));
+    });
+}
+exports.insertarPuntuacion = insertarPuntuacion;
+function modificarPuntuacion(datos, productoID, puntuacion) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.modificarPuntuacion(datos.UsuarioID, productoID, puntuacion));
+                conexion.end();
+                res('puntuacion modificada');
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de modificarPuntuacion: ${err}`);
+            }
+        }));
+    });
+}
+exports.modificarPuntuacion = modificarPuntuacion;
+function validacionComentario(datos, productoID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                let resultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.validacionComentario(datos.UsuarioID, productoID));
+                conexion.end();
+                resultado = (0, utilidades_1.quitarReferencia)(resultado);
+                console.log(resultado);
+                if (!resultado.length)
+                    throw new Error('no se puede comentar sin haber puntuado antes');
+                if (resultado.length > 1)
+                    throw new Error('se ha devuelto mas de un comentario');
+                if (!resultado[0].Comentario)
+                    res([1, 'existe la puntuacion pero no el comentario, se agregara un comentario nuevo']);
+                else
+                    res([2, 'existe la puntuacion y el comentario, se modificara el comentario']);
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de validacionComentario: ${err}`);
+            }
+        }));
+    });
+}
+exports.validacionComentario = validacionComentario;
+function insertarComentario(datos, productoID, comentario) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.comentarioNuevo(datos.UsuarioID, productoID, comentario));
+                res('nuevo comentario insertado');
+                conexion.end();
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de insertarComentario: ${err}`);
+            }
+        }));
+    });
+}
+exports.insertarComentario = insertarComentario;
+function modificarComentario(datos, productoID, comentario) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.modificarComentario(datos.UsuarioID, productoID, comentario));
+                conexion.end();
+                res('comentario modificado');
+            }
+            catch (err) {
+                rej(`Error en la ejecucion de modificarComentario: ${err}`);
+            }
+        }));
+    });
+}
+exports.modificarComentario = modificarComentario;

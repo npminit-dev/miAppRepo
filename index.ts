@@ -2,7 +2,7 @@ import {Request, Response} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
 import cors from "cors";
-import { prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail, registrar, iniciarSesion, obtenerMisDatos, modificarMisDatos, obtenerTotalCarrito } from './mismodulos/consultasFuncts';
+import { prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail, registrar, iniciarSesion, obtenerMisDatos, modificarMisDatos, obtenerTotalCarrito, miCarrito, agregarAlCarrito, vaciarCarrito, actualizarFechaModCarrito, miReseña, existeLaPuntuacion, insertarPuntuacion, modificarPuntuacion, validacionComentario, insertarComentario, modificarComentario } from './mismodulos/consultasFuncts';
 import { SQLQuery, verificarYDecodificarJWT, crearConexionDB, revertirFecha } from './mismodulos/utilidades';
 import { datosRegistro, tuplaNuevosDatos, misDatos } from './interfaces/interfaces&Tuplas';
 import queries from './mismodulos/queries';
@@ -43,11 +43,11 @@ app.get('/', (req: Request, res: Response) => {
 //   .then(resultado => console.log(resultado))
 
 // reseñasAsc()
-// reseñasAsc(152) 
+// reseñasAsc(106) 
 //   .then(resultado => console.log(resultado))
 
 // reseñasDesc()
-// reseñasDesc(153)
+// reseñasDesc(106)
 //   .then(resultado => console.log(resultado))
 
 // existeElAlias() (si existe devolvera la promesa rechazada, por lo que debemos capturar el error con un .catch() en el caso de usar la sintaxis de then
@@ -120,6 +120,12 @@ const jwtdecodificado = { // ahora usaremos este jwt decodificado para las sigui
   exp: 1685212048 
 };
 
+const jwtusuario2 = { // para probar vaciar carrito
+  UsuarioID: 2,
+  AliasUsuario: 'MyNewAlias',
+  Nombres: 'Anita Maria',
+  Apellido: 'Garcia Perez'
+};
 
 // obtener mis datos
 // (async() => {
@@ -149,7 +155,17 @@ const jwtdecodificado = { // ahora usaremos este jwt decodificado para las sigui
 //   }
 // })()
 
-// // obtener total del carrito
+// obtener carrito
+// (async () => {
+//   try {
+//     let carrito = await miCarrito(jwtdecodificado);
+//     console.log(carrito)
+//   } catch (err) {
+//     console.log(err)
+//   }
+// })();
+
+// obtener total del carrito
 // (async() => {
 //   try{
 //     let total = await obtenerTotalCarrito(jwtdecodificado)
@@ -157,10 +173,90 @@ const jwtdecodificado = { // ahora usaremos este jwt decodificado para las sigui
 //   } catch(err) {
 //     console.log(err)
 //   }
-// })() 
+// })();
 
+// agregar al carrito
+// (async() => {
+//   try {
+//     let respuesta = await agregarAlCarrito(jwtusuario2, 136, 2)
+//     console.log(respuesta)
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })();
 
+// vaciar carrito (usamos el jwt del usuario 2 declarado mas arriba)
+// (async() => {
+//   try {
+//     let respuesta = await vaciarCarrito(jwtusuario2);
+//     console.log(respuesta)
+//   } catch(err) {
+//     console.log(err)
+//   } 
+// })(); // volvemos a agregar los productos desde sql workbench
 
+// modificar fecha de modificacion del carrito
+// (async() => {
+//   try {
+//     let respuesta = await actualizarFechaModCarrito(jwtdecodificado)
+//     console.log(respuesta)
+//   } catch (err) {
+//     console.log(err)
+//   }
+// })();
+
+// mi reseña
+// (async() => {
+//   try {
+//     let reseña = await miReseña(jwtusuario2, 153);
+//     console.log(reseña)
+//   } catch(err){
+//     console.log(err);
+//   }
+// })();
+
+// existe la puntuacion (esto sirve para validar las consultas posteriores)
+// (async() => {
+//   try {
+//     let resultado = await existeLaPuntuacion(jwtusuario2, 153)
+//     console.log(resultado)
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })();
+
+// insertar/modificar puntuacion (usamos la consulta anterior para validar que hacer en cada caso)
+// (async () => {
+//   try {
+//     let existe = await existeLaPuntuacion(jwtusuario2, 112);
+//     let resultado: string;
+//     if(!existe) resultado = await insertarPuntuacion(jwtusuario2, 112, 2);
+//     else resultado = await modificarPuntuacion(jwtusuario2, 112, 2);
+//     console.log(resultado);
+//   } catch(err) {
+//     console.log(err)  
+//   } 
+// })();
+ 
+// insertar/modificar comentario (la logica se encuentra en queries.ts):
+// (async() => {
+//   try {
+//     let exito;
+//     let respuesta = await validacionComentario(jwtdecodificado, 106) // validamos primero
+//     if(respuesta[0] === 1) {
+//       console.log(respuesta[1])
+//       exito = await insertarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio')
+//       console.log(exito)
+//     } 
+//     if(respuesta[0] === 2) {
+//       console.log(respuesta[1]) 
+//       exito = await modificarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio')
+//       console.log(exito)
+//     }
+//   } catch(err) {
+//     console.log(err)
+//   }
+// })();
 
 app.listen(process.env.PORT || 3000)
 console.log(`App Express escuchando en el puerto ${process.env.PORT || 3000}`) 

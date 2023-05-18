@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import queries from './queries'
 import { chequearHash, crearJWT, hashearContraseña, revertirFecha, crearConexionDB, SQLQuery, quitarReferencia } from './utilidades';
-import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail, misDatos, tuplaNuevosDatos } from '../interfaces/interfaces&Tuplas';
+import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail, misDatos, tuplaNuevosDatos, carrito, puntuacion, validacionComentario } from '../interfaces/interfaces&Tuplas';
 
 dotenv.config({path: '../var_entorno.env'})
 
@@ -187,9 +187,9 @@ export async function iniciarSesion(aliasUsuario: string, contraseña: string): 
       const conexion: Connection = crearConexionDB();
       conexion.connect();
       let resultado = await SQLQuery(conexion, queries.existeElUsuario(aliasUsuario))
-      if(resultado.length === 0 || resultado.length > 1) throw new Error('no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
+      if(resultado.length === 0 || resultado.length > 1) throw new Error('Error en la ejecucion de iniciarSesion: no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
       let esCorrecta: boolean = await chequearHash(contraseña, resultado[0].Contraseña);
-      if(!esCorrecta) throw new Error('el usuario existe, pero la contraseña es invalida');
+      if(!esCorrecta) throw new Error('Error en la ejecucion de iniciarSesion: el usuario existe, pero la contraseña es invalida');
       let jwtdatos: jwt[] = await SQLQuery(conexion, queries.devolverJWTData(aliasUsuario));
       jwtdatos = quitarReferencia(jwtdatos);
       let jwtcodificado = crearJWT(jwtdatos[0]);
@@ -234,17 +234,184 @@ export async function modificarMisDatos(datos: jwt, nuevosDatos: tuplaNuevosDato
   })
 }
 
+export async function miCarrito(datos: jwt): Promise<carrito>{
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB();
+      conexion.connect();
+      let carrito = await SQLQuery(conexion, queries.miCarrito(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido))
+      conexion.end();
+      carrito = quitarReferencia(carrito)
+      res(carrito)
+    } catch (err) {
+      rej(`Error en la ejecucion de miCarrito: ${err}`)
+    }
+  })
+}
+
 export async function obtenerTotalCarrito(datos: jwt): Promise<number> {
   return new Promise(async (res, rej) => {
     try {
       const conexion: Connection = crearConexionDB('multiple');
       conexion.connect();
       let total = await SQLQuery(conexion, queries.totalMiCarrito(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido))
+      if(!total.length) res(0.0)
       total = quitarReferencia(total)
       conexion.end();
       res(total[0].Total_Carrito)
     } catch(err){
-      rej(err)
+      rej(`Error en la ejecucion de obtenerTotalCarrito: ${err}`)
+    }
+  })
+}
+
+export async function agregarAlCarrito(datos: jwt, productoID: number, cantidad: number): Promise<string>{
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.agregarAlCarrito(datos.UsuarioID, productoID, cantidad))
+      conexion.end()
+      res('agregado')
+    } catch(err) {
+      rej(`Error en la ejecucion de agregarAlCarrito: ${err}`)
+    }
+  })
+}
+
+export async function vaciarCarrito(datos: jwt): Promise<string> {
+  return new Promise(async (res, rej) => {  
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.vaciarMiCarrito(datos.UsuarioID))
+      conexion.end();
+      res('vaciado') 
+    } catch(err) {
+      rej(`Error en la ejecucion de vaciarCarrito: ${err}`)
+    } 
+  })
+}
+
+export async function actualizarFechaModCarrito(datos: jwt): Promise<string>{
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB();
+      conexion.connect();
+      await SQLQuery(conexion, queries.actualizarFechaModCarrito(datos.UsuarioID))
+      conexion.end();
+      res('fecha de modificacion del carrito actualizada');
+    } catch(err) {
+      rej(`Error en la ejecucion de actualizarFechaModCarrito: ${err}`)
+    }
+  })
+}
+
+export async function miReseña(datos: jwt, productoID: number): Promise<reseña|string> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB();
+      conexion.connect();
+      let reseña = await SQLQuery(conexion, queries.miReseña(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido, productoID))
+      reseña = quitarReferencia(reseña)
+      if(reseña.length === 0) res('el usuario no ha reseñado el producto')
+      if(reseña.length > 1) throw new Error('se ha devuelto mas de 1 reseña (y eso es malo)');
+      conexion.end();
+      res(reseña[0]);
+    } catch(err) {
+      rej(`Error en la ejecucion de miReseña: ${err}`)
+    }
+  })
+}
+
+export async function existeLaPuntuacion(datos: jwt, productoID: number): Promise<boolean> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB();
+      conexion.connect();
+      let resultado: puntuacion[] = await SQLQuery(conexion, queries.existeLaPuntuacion(datos.UsuarioID, productoID));
+      resultado = quitarReferencia(resultado);
+      conexion.end();
+      if(!resultado.length) res(false)
+      if(resultado.length > 1) throw new Error('se ha devuelto mas de una puntuacion del usuario con respecto al producto')
+      else res(true)
+    } catch(err) {
+      rej(`Error en la ejecucion de existeLaPuntuacion: ${err}`)
+    }
+  })
+}
+
+export async function insertarPuntuacion(datos: jwt, productoID: number, puntuacion: number): Promise<string> {
+  return new Promise( async(res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.insertarPuntuacion(datos.UsuarioID, productoID, puntuacion));
+      conexion.end();
+      res('puntuacion añadida')
+    } catch(err) {
+      rej(`Error en la ejecucion de insertarPuntuacion: ${err}`)
+    }
+  })
+}
+
+export async function modificarPuntuacion(datos: jwt, productoID: number, puntuacion: number): Promise<string> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.modificarPuntuacion(datos.UsuarioID, productoID, puntuacion));
+      conexion.end();
+      res('puntuacion modificada')
+    } catch(err) {
+      rej(`Error en la ejecucion de modificarPuntuacion: ${err}`)
+    }
+  })
+}
+
+export async function validacionComentario(datos: jwt, productoID: number): Promise<[number, string]> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      let resultado: validacionComentario[] | [] = await SQLQuery(conexion, queries.validacionComentario(datos.UsuarioID, productoID));
+      conexion.end();
+      resultado = quitarReferencia(resultado)
+      console.log(resultado)
+      if(!resultado.length) throw new Error('no se puede comentar sin haber puntuado antes')
+      if(resultado.length > 1) throw new Error('se ha devuelto mas de un comentario')
+      if(!resultado[0].Comentario) res([1, 'existe la puntuacion pero no el comentario, se agregara un comentario nuevo'])
+      else res([2,'existe la puntuacion y el comentario, se modificara el comentario'])
+    } catch(err) {
+      rej(`Error en la ejecucion de validacionComentario: ${err}`)
+    }
+  })
+}
+
+export async function insertarComentario(datos: jwt, productoID: number, comentario: string): Promise<string> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.comentarioNuevo(datos.UsuarioID, productoID, comentario));
+      res('nuevo comentario insertado');
+      conexion.end();
+    } catch(err) {
+      rej(`Error en la ejecucion de insertarComentario: ${err}`)
+    }
+  })
+}
+
+export async function modificarComentario(datos: jwt, productoID: number, comentario: string): Promise<string> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion: Connection = crearConexionDB('multiple');
+      conexion.connect();
+      await SQLQuery(conexion, queries.modificarComentario(datos.UsuarioID, productoID, comentario));
+      conexion.end();
+      res('comentario modificado')
+    } catch(err) {
+      rej(`Error en la ejecucion de modificarComentario: ${err}`)
     }
   })
 }
