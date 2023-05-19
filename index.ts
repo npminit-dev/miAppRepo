@@ -1,16 +1,18 @@
-import {Request, Response} from 'express';
+import {Application, Request, Response} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
 import cors from "cors";
 import { prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail, registrar, iniciarSesion, obtenerMisDatos, modificarMisDatos, obtenerTotalCarrito, miCarrito, agregarAlCarrito, vaciarCarrito, actualizarFechaModCarrito, miReseña, existeLaPuntuacion, insertarPuntuacion, modificarPuntuacion, validacionComentario, insertarComentario, modificarComentario } from './mismodulos/consultasFuncts';
 import { SQLQuery, verificarYDecodificarJWT, crearConexionDB, revertirFecha } from './mismodulos/utilidades';
-import { datosRegistro, tuplaNuevosDatos, misDatos } from './interfaces/interfaces&Tuplas';
-import queries from './mismodulos/queries';
+import { datosRegistro, tuplaNuevosDatos, misDatos } from './interfaces&tuplas/tipos';
+import prodsRouter from './routers/prods';
 
-const app = express()
+const app: Application = express()
 
 dotenv.config({path: 'var_entorno.env'}) // variables de entorno
 app.use(cors()) // modo cors
+app.use(express.json())
+app.use(prodsRouter)
 
 app.get('/', (req: Request, res: Response) => {
   res.send('this is the home page')
@@ -245,12 +247,12 @@ const jwtusuario2 = { // para probar vaciar carrito
 //     let respuesta = await validacionComentario(jwtdecodificado, 106) // validamos primero
 //     if(respuesta[0] === 1) {
 //       console.log(respuesta[1])
-//       exito = await insertarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio')
+//       exito = await insertarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio nada que decir al respecto de eso')
 //       console.log(exito)
 //     } 
 //     if(respuesta[0] === 2) {
 //       console.log(respuesta[1]) 
-//       exito = await modificarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio')
+//       exito = await modificarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio nada que decir al respecto de eso')
 //       console.log(exito)
 //     }
 //   } catch(err) {

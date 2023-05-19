@@ -84,3 +84,7 @@ export interface validacionComentario {
   Comentario?: string | null,
   UsuarioID?: number
 }
+
+export interface reseñaBody {
+  ProductoID: number
+}

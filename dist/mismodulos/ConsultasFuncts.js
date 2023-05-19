@@ -452,7 +452,6 @@ function validacionComentario(datos, productoID) {
                 let resultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.validacionComentario(datos.UsuarioID, productoID));
                 conexion.end();
                 resultado = (0, utilidades_1.quitarReferencia)(resultado);
-                console.log(resultado);
                 if (!resultado.length)
                     throw new Error('no se puede comentar sin haber puntuado antes');
                 if (resultado.length > 1)

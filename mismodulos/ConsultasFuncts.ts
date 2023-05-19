@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import queries from './queries'
 import { chequearHash, crearJWT, hashearContraseña, revertirFecha, crearConexionDB, SQLQuery, quitarReferencia } from './utilidades';
-import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail, misDatos, tuplaNuevosDatos, carrito, puntuacion, validacionComentario } from '../interfaces/interfaces&Tuplas';
+import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail, misDatos, tuplaNuevosDatos, carrito, puntuacion, validacionComentario } from '../interfaces&tuplas/tipos';
 
 dotenv.config({path: '../var_entorno.env'})
 
@@ -377,7 +377,6 @@ export async function validacionComentario(datos: jwt, productoID: number): Prom
       let resultado: validacionComentario[] | [] = await SQLQuery(conexion, queries.validacionComentario(datos.UsuarioID, productoID));
       conexion.end();
       resultado = quitarReferencia(resultado)
-      console.log(resultado)
       if(!resultado.length) throw new Error('no se puede comentar sin haber puntuado antes')
       if(resultado.length > 1) throw new Error('se ha devuelto mas de un comentario')
       if(!resultado[0].Comentario) res([1, 'existe la puntuacion pero no el comentario, se agregara un comentario nuevo'])

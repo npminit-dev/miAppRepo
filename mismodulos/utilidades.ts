@@ -1,7 +1,7 @@
 import mysql, { Connection } from 'mysql'
 import bcrypt from 'bcrypt';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken'
-import { carrito, datosRegistro, jwt, prod, prodYImgs, reseña, usuarioBasico } from '../interfaces/interfaces&Tuplas';
+import { carrito, datosRegistro, jwt, prod, prodYImgs, reseña, usuarioBasico } from '../interfaces&tuplas/tipos';
 
 export function crearConexionDB(multiple?: string) : Connection {
   return mysql.createConnection({

@@ -6,9 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
+const prods_1 = __importDefault(require("./routers/prods"));
 const app = (0, express_1.default)();
 dotenv_1.default.config({ path: 'var_entorno.env' }); // variables de entorno
 app.use((0, cors_1.default)()); // modo cors
+app.use(express_1.default.json());
+app.use(prods_1.default);
 app.get('/', (req, res) => {
     res.send('this is the home page');
 });
@@ -211,12 +214,12 @@ const jwtusuario2 = {
 //     let respuesta = await validacionComentario(jwtdecodificado, 106) // validamos primero
 //     if(respuesta[0] === 1) {
 //       console.log(respuesta[1])
-//       exito = await insertarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio')
+//       exito = await insertarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio nada que decir al respecto de eso')
 //       console.log(exito)
 //     } 
 //     if(respuesta[0] === 2) {
 //       console.log(respuesta[1]) 
-//       exito = await modificarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio')
+//       exito = await modificarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio nada que decir al respecto de eso')
 //       console.log(exito)
 //     }
 //   } catch(err) {
