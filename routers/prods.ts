@@ -4,15 +4,18 @@ import { prodYImgs, reseña, reseñaBody } from '../interfaces&tuplas/tipos';
 
 const prodsRouter: Router = express.Router();
 
+
 prodsRouter.get('/prods', (req, res) => {
   res.status(200).send('pagina de productos principal')
 })
+
 
 prodsRouter.get('/prods/defecto', (req, res) => {
   prodsPorDefecto()
     .then(prods => res.status(200).send(prods))
     .catch(err => res.status(404).send(err))
 })
+
 
 prodsRouter.get('/prods/nombre/:criterio', (async (req, res) => {
   let prods: prodYImgs[];
@@ -26,6 +29,7 @@ prodsRouter.get('/prods/nombre/:criterio', (async (req, res) => {
   }
 }) as RequestHandler)
 
+
 prodsRouter.get('/prods/precio/:criterio', (async (req, res) => {
   let prods: prodYImgs[];
   try {
@@ -37,6 +41,7 @@ prodsRouter.get('/prods/precio/:criterio', (async (req, res) => {
     res.status(404).send(err)
   }
 }) as RequestHandler)
+
 
 prodsRouter.get('/prods/categoria/:criterio', (async (req, res) => {
   let prods: prodYImgs[];
@@ -50,6 +55,7 @@ prodsRouter.get('/prods/categoria/:criterio', (async (req, res) => {
   }
 }) as RequestHandler)
 
+
 prodsRouter.post('/prods/resena/:criterio', (async (req, res) => {
   let datos: reseñaBody = req.body;
   let prods: reseña[] | string;
@@ -62,5 +68,6 @@ prodsRouter.post('/prods/resena/:criterio', (async (req, res) => {
     res.status(404).send(err)
   }
 }) as RequestHandler)
+
 
 export default prodsRouter;

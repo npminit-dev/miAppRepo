@@ -32,6 +32,14 @@ export function obtenerFechaActual(): string{
   return `${año}-${mes}-${dia}`
 }
 
+export function agregarCeros(fecha: string): string {
+  let fechaarray: Array<string> = fecha.split('-')
+  return fechaarray.map((elem) => {
+    if(elem.length === 1) return `0${elem}`
+    else return elem
+  }).join('-')
+}
+
 export const hashearContraseña = (contraseña: string): Promise<string> => new Promise((res, rej) => bcrypt.hash(contraseña, 12, (err: Error|undefined, hash: string) => err ? rej(err) : res(hash)))
 // export function hashearContraseña(contraseña: string): Promise<string>{
 //   return new Promise((res, rej) => 
@@ -41,11 +49,15 @@ export const hashearContraseña = (contraseña: string): Promise<string> => new 
 
 // convierte un formato dd-mm-yyyy a yyyy-mm-dd para guardar en la ddbb
 
-export function chequearHash(cadena: string, hash: string): Promise<boolean> {
-  return new Promise((res, rej) => {
-    bcrypt.compare(cadena, hash)
-    .then(result => result ? res(true) : rej(false))
-  })
+export async function chequearHash(cadena: string, hash: string): Promise<boolean> {
+  try {
+    let result = await bcrypt.compare(cadena, hash)
+    return result
+  } catch(err) {
+    return false
+  }
+    // .then(result => result ? res(true) : rej('contraseña incorrecta'))
+  
 }
 
 export function crearJWT(datos: jwt): Promise<string|undefined> {

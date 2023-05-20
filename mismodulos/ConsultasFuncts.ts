@@ -142,7 +142,7 @@ export async function existeElAlias(aliasAComropbar: string): Promise<boolean>{
       conexion.connect();
       let consultaResultado = await SQLQuery(conexion, queries.existeElAlias(aliasAComropbar))
       conexion.end();
-      if(consultaResultado.length) rej(true)
+      if(consultaResultado.length) rej('El alias ya existe')
       res(false)
     } catch(err){
       console.log(`Error en la ejecucion de existeElAlias: ${err}`)
@@ -157,7 +157,7 @@ export async function existeElMail(mailAComprobar: string): Promise<boolean>{
       conexion.connect();
       let consultaResultado = await SQLQuery(conexion, queries.existeElMail(mailAComprobar))
       conexion.end();
-      if(consultaResultado.length) rej(true)
+      if(consultaResultado.length) rej('El mail ya existe')
       res(false)
     } catch(err){
       console.log(`Error en la ejecucion de existeElMail: ${err}`)
@@ -171,7 +171,7 @@ export async function registrar(datos: datosRegistro): Promise<string> {
       const conexion: Connection = crearConexionDB('multiple');
       conexion.connect();
       let hash: string = await hashearContraseña(datos.Contraseña);
-      let resultadoConsulta = await SQLQuery(conexion, queries.registrar(datos.Alias, datos.Nombres, datos.Apellido, revertirFecha(datos.FechaNac),
+      await SQLQuery(conexion, queries.registrar(datos.Alias, datos.Nombres, datos.Apellido, revertirFecha(datos.FechaNac),
       datos.Edad, datos.Email, datos.Telefono, hash));
       conexion.end();
       res('registro correcto');
@@ -187,16 +187,16 @@ export async function iniciarSesion(aliasUsuario: string, contraseña: string): 
       const conexion: Connection = crearConexionDB();
       conexion.connect();
       let resultado = await SQLQuery(conexion, queries.existeElUsuario(aliasUsuario))
-      if(resultado.length === 0 || resultado.length > 1) throw new Error('Error en la ejecucion de iniciarSesion: no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
+      if(resultado.length === 0 || resultado.length > 1) throw new Error('no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
       let esCorrecta: boolean = await chequearHash(contraseña, resultado[0].Contraseña);
-      if(!esCorrecta) throw new Error('Error en la ejecucion de iniciarSesion: el usuario existe, pero la contraseña es invalida');
+      if(!esCorrecta) throw new Error('el usuario existe, pero la contraseña es invalida');
       let jwtdatos: jwt[] = await SQLQuery(conexion, queries.devolverJWTData(aliasUsuario));
       jwtdatos = quitarReferencia(jwtdatos);
       let jwtcodificado = crearJWT(jwtdatos[0]);
       conexion.end();
       res(jwtcodificado);
     } catch (err){
-      rej(`Error en la ejecucion de iniciarSesion:${err}`)
+      rej(`Error en la ejecucion de iniciarSesion: ${err}`)
     }
   })
 }

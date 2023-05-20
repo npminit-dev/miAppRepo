@@ -88,3 +88,8 @@ export interface validacionComentario {
 export interface reseñaBody {
   ProductoID: number
 }
+
+export interface inicioSesionDatos {
+  AliasUsuario: string,
+  Contraseña: string
+}

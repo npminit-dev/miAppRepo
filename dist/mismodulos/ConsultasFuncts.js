@@ -165,7 +165,7 @@ function existeElAlias(aliasAComropbar) {
                 let consultaResultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeElAlias(aliasAComropbar));
                 conexion.end();
                 if (consultaResultado.length)
-                    rej(true);
+                    rej('El alias ya existe');
                 res(false);
             }
             catch (err) {
@@ -184,7 +184,7 @@ function existeElMail(mailAComprobar) {
                 let consultaResultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeElMail(mailAComprobar));
                 conexion.end();
                 if (consultaResultado.length)
-                    rej(true);
+                    rej('El mail ya existe');
                 res(false);
             }
             catch (err) {
@@ -201,7 +201,7 @@ function registrar(datos) {
                 const conexion = (0, utilidades_1.crearConexionDB)('multiple');
                 conexion.connect();
                 let hash = yield (0, utilidades_1.hashearContraseña)(datos.Contraseña);
-                let resultadoConsulta = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.registrar(datos.Alias, datos.Nombres, datos.Apellido, (0, utilidades_1.revertirFecha)(datos.FechaNac), datos.Edad, datos.Email, datos.Telefono, hash));
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.registrar(datos.Alias, datos.Nombres, datos.Apellido, (0, utilidades_1.revertirFecha)(datos.FechaNac), datos.Edad, datos.Email, datos.Telefono, hash));
                 conexion.end();
                 res('registro correcto');
             }
@@ -220,10 +220,10 @@ function iniciarSesion(aliasUsuario, contraseña) {
                 conexion.connect();
                 let resultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeElUsuario(aliasUsuario));
                 if (resultado.length === 0 || resultado.length > 1)
-                    throw new Error('Error en la ejecucion de iniciarSesion: no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
+                    throw new Error('no se ha encontrado el nombre de usuario (o se ha devuelto mas de un usuario)');
                 let esCorrecta = yield (0, utilidades_1.chequearHash)(contraseña, resultado[0].Contraseña);
                 if (!esCorrecta)
-                    throw new Error('Error en la ejecucion de iniciarSesion: el usuario existe, pero la contraseña es invalida');
+                    throw new Error('el usuario existe, pero la contraseña es invalida');
                 let jwtdatos = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.devolverJWTData(aliasUsuario));
                 jwtdatos = (0, utilidades_1.quitarReferencia)(jwtdatos);
                 let jwtcodificado = (0, utilidades_1.crearJWT)(jwtdatos[0]);
@@ -231,7 +231,7 @@ function iniciarSesion(aliasUsuario, contraseña) {
                 res(jwtcodificado);
             }
             catch (err) {
-                rej(`Error en la ejecucion de iniciarSesion:${err}`);
+                rej(`Error en la ejecucion de iniciarSesion: ${err}`);
             }
         }));
     });

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.quitarReferencia = exports.revertirFecha = exports.verificarYDecodificarJWT = exports.crearJWT = exports.chequearHash = exports.hashearContraseña = exports.obtenerFechaActual = exports.SQLQuery = exports.crearConexionDB = void 0;
+exports.quitarReferencia = exports.revertirFecha = exports.verificarYDecodificarJWT = exports.crearJWT = exports.chequearHash = exports.hashearContraseña = exports.agregarCeros = exports.obtenerFechaActual = exports.SQLQuery = exports.crearConexionDB = void 0;
 const mysql_1 = __importDefault(require("mysql"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
@@ -50,6 +50,16 @@ function obtenerFechaActual() {
     return `${año}-${mes}-${dia}`;
 }
 exports.obtenerFechaActual = obtenerFechaActual;
+function agregarCeros(fecha) {
+    let fechaarray = fecha.split('-');
+    return fechaarray.map((elem) => {
+        if (elem.length === 1)
+            return `0${elem}`;
+        else
+            return elem;
+    }).join('-');
+}
+exports.agregarCeros = agregarCeros;
 const hashearContraseña = (contraseña) => new Promise((res, rej) => bcrypt_1.default.hash(contraseña, 12, (err, hash) => err ? rej(err) : res(hash)));
 exports.hashearContraseña = hashearContraseña;
 // export function hashearContraseña(contraseña: string): Promise<string>{
@@ -59,9 +69,15 @@ exports.hashearContraseña = hashearContraseña;
 // }
 // convierte un formato dd-mm-yyyy a yyyy-mm-dd para guardar en la ddbb
 function chequearHash(cadena, hash) {
-    return new Promise((res, rej) => {
-        bcrypt_1.default.compare(cadena, hash)
-            .then(result => result ? res(true) : rej(false));
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let result = yield bcrypt_1.default.compare(cadena, hash);
+            return result;
+        }
+        catch (err) {
+            return false;
+        }
+        // .then(result => result ? res(true) : rej('contraseña incorrecta'))
     });
 }
 exports.chequearHash = chequearHash;

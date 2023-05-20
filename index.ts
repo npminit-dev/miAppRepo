@@ -1,22 +1,31 @@
-import {Application, Request, Response} from 'express';
+import {Application, Request, Response, Router} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
 import cors from "cors";
-import { prodsPorDefecto, prodsPorNombreAsc, prodsPorPrecioAsc, prodsPorPrecioDesc, prodsPorCatAsc, prodsPorCatDesc, reseñasAsc, reseñasDesc, existeElAlias, existeElMail, registrar, iniciarSesion, obtenerMisDatos, modificarMisDatos, obtenerTotalCarrito, miCarrito, agregarAlCarrito, vaciarCarrito, actualizarFechaModCarrito, miReseña, existeLaPuntuacion, insertarPuntuacion, modificarPuntuacion, validacionComentario, insertarComentario, modificarComentario } from './mismodulos/consultasFuncts';
-import { SQLQuery, verificarYDecodificarJWT, crearConexionDB, revertirFecha } from './mismodulos/utilidades';
 import { datosRegistro, tuplaNuevosDatos, misDatos } from './interfaces&tuplas/tipos';
 import prodsRouter from './routers/prods';
+import accControlFuncts from './routers/cuenta' 
+import { agregarCeros, verificarYDecodificarJWT } from './mismodulos/utilidades';
+import morgan from 'morgan'
 
 const app: Application = express()
 
+// utilidades del proyecto
 dotenv.config({path: 'var_entorno.env'}) // variables de entorno
+app.use(morgan('dev')) // morgan para obtener informacion de las solicitudes
 app.use(cors()) // modo cors
-app.use(express.json())
+app.use(express.json()) // permite interpretar JSON que provienen de las solicitudes 
+app.use(express.text()) // permite interpretar texto que provienen de las solicitudes 
+
+// controladores sobre productos y reseñas (usuarios sin inicio de sesion)
 app.use(prodsRouter)
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('this is the home page')
-});
+// controladores sobre control de cuentas
+const accControlRouter = Router();
+accControlRouter.post('/usuarios/registrar', accControlFuncts.registrar_Controlador)
+accControlRouter.post('/usuarios/iniciarsesion', accControlFuncts.iniciarSesion_Controlador)
+
+app.use(accControlRouter)
 
 // TESTING
 

@@ -3,18 +3,27 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
 const dotenv_1 = __importDefault(require("dotenv"));
-const express_1 = __importDefault(require("express"));
+const express_2 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const prods_1 = __importDefault(require("./routers/prods"));
-const app = (0, express_1.default)();
+const cuenta_1 = __importDefault(require("./routers/cuenta"));
+const morgan_1 = __importDefault(require("morgan"));
+const app = (0, express_2.default)();
+// utilidades del proyecto
 dotenv_1.default.config({ path: 'var_entorno.env' }); // variables de entorno
+app.use((0, morgan_1.default)('dev')); // morgan para obtener informacion de las solicitudes
 app.use((0, cors_1.default)()); // modo cors
-app.use(express_1.default.json());
+app.use(express_2.default.json()); // permite interpretar JSON que provienen de las solicitudes 
+app.use(express_2.default.text()); // permite interpretar texto que provienen de las solicitudes 
+// controladores sobre productos y reseñas (usuarios sin inicio de sesion)
 app.use(prods_1.default);
-app.get('/', (req, res) => {
-    res.send('this is the home page');
-});
+// controladores sobre control de cuentas
+const accControlRouter = (0, express_1.Router)();
+accControlRouter.post('/usuarios/registrar', cuenta_1.default.registrar_Controlador);
+accControlRouter.post('/usuarios/iniciarsesion', cuenta_1.default.iniciarSesion_Controlador);
+app.use(accControlRouter);
 // TESTING
 // prodsPorDefecto:
 // prodsPorDefecto()
