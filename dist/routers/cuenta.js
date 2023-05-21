@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const consultasFuncts_1 = require("../mismodulos/consultasFuncts");
+const utilidades_1 = require("../mismodulos/utilidades");
 const registrar_Controlador = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     let datosRegistro = req.body;
     let resultado;
@@ -40,7 +41,34 @@ const iniciarSesion_Controlador = (req, res) => __awaiter(void 0, void 0, void 0
         res.status(404).send(err);
     }
 });
+const datosCuenta_Controlador = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let jwtcodificado = req.body;
+    try {
+        if (!jwtcodificado)
+            throw new Error('body de la peticion vacio');
+        let jwtdecodificado = yield (0, utilidades_1.verificarYDecodificarJWT)(jwtcodificado);
+        let datosCuenta = yield (0, consultasFuncts_1.obtenerMisDatos)(jwtdecodificado);
+        res.status(200).send(datosCuenta[0]);
+    }
+    catch (err) {
+        res.status(409).send(`Error ${err}`);
+    }
+});
+const modificarDatos_Controlador = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let jwtYNuevosDatos = req.body;
+    try {
+        jwtYNuevosDatos[0] = (yield (0, utilidades_1.verificarYDecodificarJWT)(jwtYNuevosDatos[0]));
+        jwtYNuevosDatos[1][2] = (0, utilidades_1.revertirFecha)((0, utilidades_1.agregarCeros)(jwtYNuevosDatos[1][2]));
+        yield (0, consultasFuncts_1.modificarMisDatos)(...jwtYNuevosDatos);
+        res.status(200).send('datos modificados');
+    }
+    catch (err) {
+        res.status(409).send(`Error ${err}`);
+    }
+});
 exports.default = {
     registrar_Controlador,
-    iniciarSesion_Controlador
+    iniciarSesion_Controlador,
+    datosCuenta_Controlador,
+    modificarDatos_Controlador
 };

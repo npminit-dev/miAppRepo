@@ -75,7 +75,7 @@ FROM Usuario WHERE AliasUsuario = '${AliasUsuario}';`
 
 // obtener mis datos
 const misDatos = (UsuarioID: number, AliasUsuario: string, Nombres: string, Apellido: string): string => `
-SELECT Nombres, Apellido, FechaDeNacimiento, Edad, EMail, Telefono, FechaDeRegistro FROM Usuario us
+SELECT AliasUsuario, Nombres, Apellido, FechaDeNacimiento, Edad, EMail, Telefono, FechaDeRegistro FROM Usuario us
 WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}' AND us.Apellido = '${Apellido}';`
 
 // modificar mis datos
@@ -83,10 +83,10 @@ WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us
 // una vez verificado hacemos el update de la tabla Usuarios (La contraseña y la fecha de registro no pueden modificarse por esta consulta)
 const modificarMisDatos = 
 (UsuarioID: number, AliasUsuario: string, NombresUsuario: string, ApellidoUsuario: string,
-NAlias: string, NNombres: string, NApellido: string, NFechaDeNacimiento: string, NEdad: number, NEmail: string, NTelefono: string ): string => `
+NNombres: string, NApellido: string, NFechaDeNacimiento: string, NEdad: number, NTelefono: string ): string => `
 BEGIN;
-UPDATE Usuario SET AliasUsuario = '${NAlias}', Nombres = '${NNombres}', Apellido = '${NApellido}', 
-FechaDeNAcimiento = '${NFechaDeNacimiento}', Edad = ${NEdad}, Email = '${NEmail}', Telefono = '${NTelefono}'
+UPDATE Usuario SET Nombres = '${NNombres}', Apellido = '${NApellido}', 
+FechaDeNAcimiento = '${NFechaDeNacimiento}', Edad = ${NEdad}, Telefono = '${NTelefono}'
 WHERE UsuarioID = ${UsuarioID} AND AliasUsuario = '${AliasUsuario}' AND Nombres = '${NombresUsuario}' AND Apellido = '${ApellidoUsuario}'; 
 COMMIT;`
 

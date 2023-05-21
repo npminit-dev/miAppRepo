@@ -1,3 +1,5 @@
+// tipos de respuesta
+
 export interface prod {
   ProductoID: number;
   CategoriaID: number;
@@ -34,14 +36,24 @@ export interface jwt {
 }
 
 export interface misDatos {
-  Nombres: string;
-  Apellido: string;
-  FechaDeNacimiento: Date;
-  Edad: number;
-  EMail: string;
-  Telefono: string;
-  FechaDeRegistro: Date;
+  AliasUsuario: string,
+  Nombres: string,
+  Apellido: string,
+  FechaDeNacimiento: Date,
+  Edad: number,
+  EMail: string,
+  Telefono: string,
+  FechaDeRegistro: Date
 }
+
+export interface carrito {
+  ProductoID: number, 
+  NombreProducto: string,
+  PrecioXUnidad: number,
+  Cantidad: number
+}
+
+// para validar
 
 export interface existeAlias {
   AliasUsuario: string;
@@ -50,6 +62,18 @@ export interface existeAlias {
 export interface existeElMail {
   Email: string
 }
+
+export interface validacionComentario {
+  Comentario?: string | null,
+  UsuarioID?: number
+}
+
+export interface inicioSesionDatos {
+  AliasUsuario: string,
+  Contraseña: string
+}
+
+// para insertar datos en la ddbb
 
 export interface datosRegistro {
   Alias: string,
@@ -62,34 +86,17 @@ export interface datosRegistro {
   Contraseña: string
 }
 
-export interface usuarioBasico {
-  UsuarioID: string,
-  Contraseña: string
-}
-
-export interface carrito {
-  ProductoID: number, 
-  NombreProducto: string,
-  PrecioXUnidad: number,
-  Cantidad: number
-}
-
-export type tuplaNuevosDatos = [string, string, string, string, number, string, string]
+export type tuplaNuevosDatos = [string, string, string, number, string]
 
 export interface puntuacion {
   Puntuacion: number
-}
-
-export interface validacionComentario {
-  Comentario?: string | null,
-  UsuarioID?: number
 }
 
 export interface reseñaBody {
   ProductoID: number
 }
 
-export interface inicioSesionDatos {
-  AliasUsuario: string,
-  Contraseña: string
+export interface prodAgregado {
+  ProductoID: number,
+  Cantidad: number
 }

@@ -91,9 +91,9 @@ function verificarYDecodificarJWT(jwtstring) {
     return new Promise((res, rej) => {
         jsonwebtoken_1.default.verify(jwtstring, JSON.stringify(process.env.SECRET), (err, decoded) => {
             if (err)
-                rej(new Error(`error al decodificar el jwt: ${err}`));
+                rej(Error(`error al decodificar el jwt: ${err}`));
             if (!decoded)
-                throw new Error('el verify no ha devuelto un error, sino un decode undefined!');
+                rej(Error('el verify no ha devuelto un error, sino un decode undefined!'));
             res(decoded);
         });
     });

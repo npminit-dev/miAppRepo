@@ -1,5 +1,7 @@
-import { datosRegistro, inicioSesionDatos } from '../interfaces&tuplas/tipos';
-import { registrar, existeElMail, existeElAlias, iniciarSesion } from '../mismodulos/consultasFuncts'
+import { JwtPayload } from 'jsonwebtoken';
+import { datosRegistro, inicioSesionDatos, jwt, misDatos, tuplaNuevosDatos } from '../interfaces&tuplas/tipos';
+import { registrar, existeElMail, existeElAlias, iniciarSesion, obtenerMisDatos, modificarMisDatos } from '../mismodulos/consultasFuncts'
+import { agregarCeros, revertirFecha, verificarYDecodificarJWT } from '../mismodulos/utilidades';
 
 const registrar_Controlador = async (req: any, res: any) => {
   let datosRegistro: datosRegistro = req.body
@@ -28,8 +30,34 @@ const iniciarSesion_Controlador = async (req: any, res: any) => {
   }
 }
 
+const datosCuenta_Controlador = async (req: any, res: any) => {
+  let jwtcodificado: string = req.body;
+  try {
+    if(!jwtcodificado) throw new Error('body de la peticion vacio')
+    let jwtdecodificado = await verificarYDecodificarJWT(jwtcodificado);
+    let datosCuenta: misDatos[] = await obtenerMisDatos(jwtdecodificado as jwt)
+    res.status(200).send(datosCuenta[0])
+  } catch(err) {
+    res.status(409).send(`Error ${err}`)
+  }
+}
+
+const modificarDatos_Controlador = async (req: any, res: any) => {
+  let jwtYNuevosDatos: [any, tuplaNuevosDatos] = req.body;
+  try {
+    jwtYNuevosDatos[0] = await verificarYDecodificarJWT(jwtYNuevosDatos[0]) as jwt
+    jwtYNuevosDatos[1][2] = revertirFecha(agregarCeros(jwtYNuevosDatos[1][2]))
+    await modificarMisDatos(...jwtYNuevosDatos)
+    res.status(200).send('datos modificados')
+  } catch(err) {
+    res.status(409).send(`Error ${err}`)
+  }
+}
+
 export default {
   registrar_Controlador,
-  iniciarSesion_Controlador
+  iniciarSesion_Controlador,
+  datosCuenta_Controlador,
+  modificarDatos_Controlador
 }
 

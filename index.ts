@@ -1,11 +1,10 @@
-import {Application, Request, Response, Router} from 'express';
+import {Application, Router} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
 import cors from "cors";
-import { datosRegistro, tuplaNuevosDatos, misDatos } from './interfaces&tuplas/tipos';
 import prodsRouter from './routers/prods';
 import accControlFuncts from './routers/cuenta' 
-import { agregarCeros, verificarYDecodificarJWT } from './mismodulos/utilidades';
+import usuarioRouter from './routers/usuario'
 import morgan from 'morgan'
 
 const app: Application = express()
@@ -17,257 +16,39 @@ app.use(cors()) // modo cors
 app.use(express.json()) // permite interpretar JSON que provienen de las solicitudes 
 app.use(express.text()) // permite interpretar texto que provienen de las solicitudes 
 
+
 // controladores sobre productos y reseñas (usuarios sin inicio de sesion)
 app.use(prodsRouter)
 
-// controladores sobre control de cuentas
+
+// controladores sobre creacion, sesion, modificacion de cuentas y datos de cuentas
 const accControlRouter = Router();
 accControlRouter.post('/usuarios/registrar', accControlFuncts.registrar_Controlador)
 accControlRouter.post('/usuarios/iniciarsesion', accControlFuncts.iniciarSesion_Controlador)
-
+// usuario 1 jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjEsIkFsaWFzVXN1YXJpbyI6Ik5pY29UaGVGdWNraW5nS2luZzIiLCJOb21icmVzIjoiTmljb2xhcyBNYXJpYW5vIiwiQXBlbGxpZG8iOiJHb256YWxleiIsImlhdCI6MTY4NDU4NzExMSwiZXhwIjoxNjg1ODgzMTExfQ.PIui2lrZDaLTTnvAefWPu-mva7_IP17_WE8RCTdjmA4
+accControlRouter.post('/usuarios/misdatos', accControlFuncts.datosCuenta_Controlador)
+/* // formato del body para modificar: 
+[
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjEsIkFsaWFzVXN1YXJpbyI6Ik5pY29UaGVGdWNraW5nS2luZzIiLCJOb21icmVzIjoiTmljb2xhcyBSaWNhcmRvIiwiQXBlbGxpZG8iOiJHb256YWxleiIsImlhdCI6MTY4NDU3ODg4MCwiZXhwIjoxNjg1ODc0ODgwfQ.oCR5JBFT9GTbtiOGhlxmpqbr5pDAdfLgZ0dVVl1xzOk"
+  , 
+  [
+    "Nicolas Ricardo",
+    "Gonzalez",
+    "4-7-1996",
+    27,
+    "431-1123-111"
+  ] 
+]
+*/
+accControlRouter.put('/usuarios/modificar', accControlFuncts.modificarDatos_Controlador)
 app.use(accControlRouter)
-
-// TESTING
-
-// prodsPorDefecto:
-// prodsPorDefecto()
-//   .then(resultado => console.log(resultado))
-
-// prodsPorNombreAsc
-// prodsPorNombreAsc()
-//   .then(resultado => console.log(resultado))
-
-// prodsPorPrecioAsc
-// prodsPorPrecioAsc()
-//   .then(resultado => console.log(resultado))
-
-// prodsPorPrecioDesc
-// prodsPorPrecioDesc()
-//   .then(resultado => console.log(resultado))
-
-// prodsPorCatAsc
-// prodsPorCatAsc()
-//   .then(resultado => console.log(resultado))
-
-// prodsPorCatDesc
-// prodsPorCatDesc()
-//   .then(resultado => console.log(resultado))
-
-// reseñasAsc()
-// reseñasAsc(106) 
-//   .then(resultado => console.log(resultado))
-
-// reseñasDesc()
-// reseñasDesc(106)
-//   .then(resultado => console.log(resultado))
-
-// existeElAlias() (si existe devolvera la promesa rechazada, por lo que debemos capturar el error con un .catch() en el caso de usar la sintaxis de then
-// o con un try/catch en caso de usar async/await)
-// En TypeScript, puedes crear una función flecha ejecutada inmediatamente (también conocida como IIFE, Immediately Invoked Function Expression) utilizando el siguiente formato:
-// (async () => {
-//   try{
-//     let resultado = await existeElAlias('NicoTheKing');
-//     console.log(resultado)
-//   } catch (err) {
-//     console.log(err)
-//   }
-// })();
-
-// existeElMail()
-// ( async () => {
-//   try {
-//     let resultado = await existeElMail('Abaddd@gmail.com')
-//     console.log(resultado)
-//   } catch (err) {
-//     console.log(err)
-//   }
-// })();
-
-// registrar() creamos un objeto (haciendo las veces de)
-// const datos: datosRegistro = {
-//   Alias: 'monikkkk',
-//   Nombres: 'Monica Lucia', 
-//   Apellido: 'Gonzalez', 
-//   FechaNac: '14-08-1993', 
-//   Edad: 33, 
-//   Email: 'monicaLuciAAA@gmail.com', 
-//   Telefono: '+5411326577', 
-//   Contraseña: 'moniquitalaloquita'
-// };
-
-// (async () => {
-//   try{
-//     let fueExitoso = await registrar(datos);
-//     console.log(fueExitoso)
-//   } catch(err){
-//     console.log(err)
-//   }
-// })();
+// tener en cuenta que al modificar los datos de usuario los tokens viejos pueden no volver a funcionar
 
 
-// iniciarSesion()
-// en este ejemplo se inicia sesion con alias y contraseña usando la funcion iniciarSesion(), si esta es correcta se devuelve el JWT, 
-// encadenandola con verificarJWT esta verifica la validez del token, lo decodifica y lo devuelve
-
-// (async () => {
-//   try{
-//     console.log('holaaaa')
-//     let jsonwebt = await iniciarSesion('NicoTheKing', 'NicolasElCapo')
-//     if(!jsonwebt) jsonwebt = ''
-//     console.log(jsonwebt)
-//     let decodificado = await verificarYDecodificarJWT(jsonwebt)
-//     console.log(decodificado)
-//   } catch(err) {
-//     console.log(err) 
-//   }
-// })(); 
-
-const jwtdecodificado = { // ahora usaremos este jwt decodificado para las siguientes consultas
-  UsuarioID: 1,
-  AliasUsuario: 'NicoTheFuckingKing2',
-  Nombres: 'Nicolas Ricardo',
-  Apellido: 'Gonzalez',
-  iat: 1683916048,
-  exp: 1685212048 
-};
-
-const jwtusuario2 = { // para probar vaciar carrito
-  UsuarioID: 2,
-  AliasUsuario: 'MyNewAlias',
-  Nombres: 'Anita Maria',
-  Apellido: 'Garcia Perez'
-};
-
-// obtener mis datos
-// (async() => {
-//   try{
-//     let datos = await obtenerMisDatos(jwtdecodificado);
-//     console.log(datos)
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })();
-
-
-// modificar datos
-// datos nuevos:
-// const datosNuevos: tuplaNuevosDatos = ['NicoTheFuckingKing2', 'Nicolas Ricardo', 'Gonzalez', '23-02-1995', 31, 'NicoThecapoo@gmail.com', '431-1123-111'];
-// datosNuevos[3] = revertirFecha(datosNuevos[3]);
-
-// (async() => {
-//   try {
-//     let resultado = await modificarMisDatos(jwtdecodificado, datosNuevos); // esto devolvera un nuevo JWT que represente los datos cambiados
-//     console.log(resultado); 
-//     if(!resultado) resultado = ''
-//     let decoded = await verificarYDecodificarJWT(resultado) // lo decodificamos para verificar que los datos se aplicaron
-//     console.log(decoded)
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })()
-
-// obtener carrito
-// (async () => {
-//   try {
-//     let carrito = await miCarrito(jwtdecodificado);
-//     console.log(carrito)
-//   } catch (err) {
-//     console.log(err)
-//   }
-// })();
-
-// obtener total del carrito
-// (async() => {
-//   try{
-//     let total = await obtenerTotalCarrito(jwtdecodificado)
-//     console.log(total)
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })();
-
-// agregar al carrito
-// (async() => {
-//   try {
-//     let respuesta = await agregarAlCarrito(jwtusuario2, 136, 2)
-//     console.log(respuesta)
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })();
-
-// vaciar carrito (usamos el jwt del usuario 2 declarado mas arriba)
-// (async() => {
-//   try {
-//     let respuesta = await vaciarCarrito(jwtusuario2);
-//     console.log(respuesta)
-//   } catch(err) {
-//     console.log(err)
-//   } 
-// })(); // volvemos a agregar los productos desde sql workbench
-
-// modificar fecha de modificacion del carrito
-// (async() => {
-//   try {
-//     let respuesta = await actualizarFechaModCarrito(jwtdecodificado)
-//     console.log(respuesta)
-//   } catch (err) {
-//     console.log(err)
-//   }
-// })();
-
-// mi reseña
-// (async() => {
-//   try {
-//     let reseña = await miReseña(jwtusuario2, 153);
-//     console.log(reseña)
-//   } catch(err){
-//     console.log(err);
-//   }
-// })();
-
-// existe la puntuacion (esto sirve para validar las consultas posteriores)
-// (async() => {
-//   try {
-//     let resultado = await existeLaPuntuacion(jwtusuario2, 153)
-//     console.log(resultado)
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })();
-
-// insertar/modificar puntuacion (usamos la consulta anterior para validar que hacer en cada caso)
-// (async () => {
-//   try {
-//     let existe = await existeLaPuntuacion(jwtusuario2, 112);
-//     let resultado: string;
-//     if(!existe) resultado = await insertarPuntuacion(jwtusuario2, 112, 2);
-//     else resultado = await modificarPuntuacion(jwtusuario2, 112, 2);
-//     console.log(resultado);
-//   } catch(err) {
-//     console.log(err)  
-//   } 
-// })();
- 
-// insertar/modificar comentario (la logica se encuentra en queries.ts):
-// (async() => {
-//   try {
-//     let exito;
-//     let respuesta = await validacionComentario(jwtdecodificado, 106) // validamos primero
-//     if(respuesta[0] === 1) {
-//       console.log(respuesta[1])
-//       exito = await insertarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio nada que decir al respecto de eso')
-//       console.log(exito)
-//     } 
-//     if(respuesta[0] === 2) {
-//       console.log(respuesta[1]) 
-//       exito = await modificarComentario(jwtdecodificado, 106, 'no habia comentado anteriormente, no le doy 5 estrellas porque la chica que me atendio fue muy seca en el trato, por lo demas excelente servicio nada que decir al respecto de eso')
-//       console.log(exito)
-//     }
-//   } catch(err) {
-//     console.log(err)
-//   }
-// })();
+// controladores de carrito, producto y reseñas
+app.use(usuarioRouter)
+// usuario 7 jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjcsIkFsaWFzVXN1YXJpbyI6IkZyYW5jaXNGb3JkQ29wcG9sYSIsIk5vbWJyZXMiOiJGcmFuY2lzY28gSmF2aWVyIiwiQXBlbGxpZG8iOiJTY2h3YXJ0em1hbm4iLCJpYXQiOjE2ODQ2Mzk3NTIsImV4cCI6MTY4NTkzNTc1Mn0.-dpwKByxQIqsKSbkTUyrL6mqMoPvuNplja8vBZoJGaA
 
 app.listen(process.env.PORT || 3000)
 console.log(`App Express escuchando en el puerto ${process.env.PORT || 3000}`) 
+

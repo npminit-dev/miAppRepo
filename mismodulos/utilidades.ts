@@ -1,7 +1,7 @@
 import mysql, { Connection } from 'mysql'
 import bcrypt from 'bcrypt';
 import jsonwebtoken, { JwtPayload } from 'jsonwebtoken'
-import { carrito, datosRegistro, jwt, prod, prodYImgs, reseña, usuarioBasico } from '../interfaces&tuplas/tipos';
+import { jwt } from '../interfaces&tuplas/tipos';
 
 export function crearConexionDB(multiple?: string) : Connection {
   return mysql.createConnection({
@@ -67,11 +67,11 @@ export function crearJWT(datos: jwt): Promise<string|undefined> {
   })
 }
 
-export function verificarYDecodificarJWT(jwtstring: string): Promise<JwtPayload|string> {
+export function verificarYDecodificarJWT(jwtstring: string): Promise<JwtPayload|string|undefined> {
   return new Promise((res, rej) => {
     jsonwebtoken.verify(jwtstring, JSON.stringify(process.env.SECRET), (err, decoded) => {
-      if(err) rej(new Error(`error al decodificar el jwt: ${err}`))
-      if(!decoded) throw new Error('el verify no ha devuelto un error, sino un decode undefined!')
+      if(err) rej(Error(`error al decodificar el jwt: ${err}`))
+      if(!decoded) rej(Error('el verify no ha devuelto un error, sino un decode undefined!'))
       res(decoded)
     })
   })

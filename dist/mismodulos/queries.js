@@ -65,15 +65,15 @@ FROM Usuario WHERE AliasUsuario = '${AliasUsuario}';`;
 // una vez creado el JWT, lo usamos para hacer el resto de consultas:
 // obtener mis datos
 const misDatos = (UsuarioID, AliasUsuario, Nombres, Apellido) => `
-SELECT Nombres, Apellido, FechaDeNacimiento, Edad, EMail, Telefono, FechaDeRegistro FROM Usuario us
+SELECT AliasUsuario, Nombres, Apellido, FechaDeNacimiento, Edad, EMail, Telefono, FechaDeRegistro FROM Usuario us
 WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}' AND us.Apellido = '${Apellido}';`;
 // modificar mis datos
 // debemos reutilizar las funciones existeElAlias() y existeElMail() para verificar si el nuevo alias y el nuevo mail estan disponibles
 // una vez verificado hacemos el update de la tabla Usuarios (La contraseña y la fecha de registro no pueden modificarse por esta consulta)
-const modificarMisDatos = (UsuarioID, AliasUsuario, NombresUsuario, ApellidoUsuario, NAlias, NNombres, NApellido, NFechaDeNacimiento, NEdad, NEmail, NTelefono) => `
+const modificarMisDatos = (UsuarioID, AliasUsuario, NombresUsuario, ApellidoUsuario, NNombres, NApellido, NFechaDeNacimiento, NEdad, NTelefono) => `
 BEGIN;
-UPDATE Usuario SET AliasUsuario = '${NAlias}', Nombres = '${NNombres}', Apellido = '${NApellido}', 
-FechaDeNAcimiento = '${NFechaDeNacimiento}', Edad = ${NEdad}, Email = '${NEmail}', Telefono = '${NTelefono}'
+UPDATE Usuario SET Nombres = '${NNombres}', Apellido = '${NApellido}', 
+FechaDeNAcimiento = '${NFechaDeNacimiento}', Edad = ${NEdad}, Telefono = '${NTelefono}'
 WHERE UsuarioID = ${UsuarioID} AND AliasUsuario = '${AliasUsuario}' AND Nombres = '${NombresUsuario}' AND Apellido = '${ApellidoUsuario}'; 
 COMMIT;`;
 // obtener carrito

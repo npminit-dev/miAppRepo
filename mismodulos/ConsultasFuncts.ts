@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 
 import queries from './queries'
 import { chequearHash, crearJWT, hashearContraseña, revertirFecha, crearConexionDB, SQLQuery, quitarReferencia } from './utilidades';
-import { datosRegistro, existeAlias, jwt, prod, prodYImgs, reseña, usuarioBasico, existeElMail, misDatos, tuplaNuevosDatos, carrito, puntuacion, validacionComentario } from '../interfaces&tuplas/tipos';
+import { datosRegistro, jwt, prod, prodYImgs, reseña, existeElMail, misDatos, tuplaNuevosDatos, carrito, puntuacion, validacionComentario } from '../interfaces&tuplas/tipos';
 
 dotenv.config({path: '../var_entorno.env'})
 
@@ -203,7 +203,7 @@ export async function iniciarSesion(aliasUsuario: string, contraseña: string): 
 
 // ahora debemos usar el jwt para estas funciones, debemos pasarlo como parametros ya decodificado:
 
-export async function obtenerMisDatos(datos: jwt): Promise<misDatos>{
+export async function obtenerMisDatos(datos: jwt): Promise<misDatos[]>{
   return new Promise(async (res, rej) => {
     try{
       const conexion: Connection = crearConexionDB();
@@ -234,7 +234,7 @@ export async function modificarMisDatos(datos: jwt, nuevosDatos: tuplaNuevosDato
   })
 }
 
-export async function miCarrito(datos: jwt): Promise<carrito>{
+export async function miCarrito(datos: jwt): Promise<carrito[]>{
   return new Promise(async (res, rej) => {
     try {
       const conexion: Connection = crearConexionDB();
