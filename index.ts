@@ -5,6 +5,7 @@ import cors from "cors";
 import prodsRouter from './routers/prods';
 import accControlFuncts from './routers/cuenta' 
 import usuarioRouter from './routers/usuario'
+import archivosRouter from './routers/archivos'
 import morgan from 'morgan'
 
 const app: Application = express()
@@ -48,6 +49,9 @@ app.use(accControlRouter)
 // controladores de carrito, producto y reseñas
 app.use(usuarioRouter)
 // usuario 7 jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjcsIkFsaWFzVXN1YXJpbyI6IkZyYW5jaXNGb3JkQ29wcG9sYSIsIk5vbWJyZXMiOiJGcmFuY2lzY28gSmF2aWVyIiwiQXBlbGxpZG8iOiJTY2h3YXJ0em1hbm4iLCJpYXQiOjE2ODQ2Mzk3NTIsImV4cCI6MTY4NTkzNTc1Mn0.-dpwKByxQIqsKSbkTUyrL6mqMoPvuNplja8vBZoJGaA
+
+// controladores de archivos
+app.use(archivosRouter);
 
 app.listen(process.env.PORT || 3000)
 console.log(`App Express escuchando en el puerto ${process.env.PORT || 3000}`) 
