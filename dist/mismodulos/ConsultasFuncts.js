@@ -165,7 +165,7 @@ function existeElAlias(aliasAComropbar) {
                 let consultaResultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeElAlias(aliasAComropbar));
                 conexion.end();
                 if (consultaResultado.length)
-                    rej('El alias ya existe');
+                    res('El alias de usuario ya existe en nuestros registros, intente con otro');
                 res(false);
             }
             catch (err) {
@@ -184,7 +184,7 @@ function existeElMail(mailAComprobar) {
                 let consultaResultado = yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.existeElMail(mailAComprobar));
                 conexion.end();
                 if (consultaResultado.length)
-                    rej('El mail ya existe');
+                    res('La direccion de E-mail ya existe en nuestros registros, intente con otra');
                 res(false);
             }
             catch (err) {

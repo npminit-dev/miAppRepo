@@ -1,4 +1,3 @@
-import { JwtPayload } from 'jsonwebtoken';
 import { datosRegistro, inicioSesionDatos, jwt, misDatos, tuplaNuevosDatos } from '../interfaces&tuplas/tipos';
 import { registrar, existeElMail, existeElAlias, iniciarSesion, obtenerMisDatos, modificarMisDatos } from '../mismodulos/consultasFuncts'
 import { agregarCeros, revertirFecha, verificarYDecodificarJWT } from '../mismodulos/utilidades';
@@ -12,9 +11,9 @@ const registrar_Controlador = async (req: any, res: any) => {
     if(validacion.every(elem => elem === false)) {
       resultado = await registrar(datosRegistro);
       res.status(200).send(resultado)
-    }
+    } else res.status(409).send(JSON.stringify(validacion))
   } catch(err) {
-    res.status(409).send(err)
+    res.status(404).send(err)
   }
 }
 

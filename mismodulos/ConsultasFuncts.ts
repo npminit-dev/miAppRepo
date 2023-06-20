@@ -135,14 +135,14 @@ export function reseñasDesc(ProductoID: number): Promise<reseña[]|string> {
   })
 }
 
-export async function existeElAlias(aliasAComropbar: string): Promise<boolean>{
+export async function existeElAlias(aliasAComropbar: string): Promise<boolean|string>{
   return new Promise(async (res, rej) => {
     try{
       const conexion: Connection = crearConexionDB();
       conexion.connect();
       let consultaResultado = await SQLQuery(conexion, queries.existeElAlias(aliasAComropbar))
       conexion.end();
-      if(consultaResultado.length) rej('El alias ya existe')
+      if(consultaResultado.length) res('El alias de usuario ya existe en nuestros registros, intente con otro')
       res(false)
     } catch(err){
       console.log(`Error en la ejecucion de existeElAlias: ${err}`)
@@ -150,14 +150,14 @@ export async function existeElAlias(aliasAComropbar: string): Promise<boolean>{
   })
 }
 
-export async function existeElMail(mailAComprobar: string): Promise<boolean>{
+export async function existeElMail(mailAComprobar: string): Promise<boolean|string>{
   return new Promise(async (res, rej) => {
     try{
       const conexion: Connection = crearConexionDB();
       conexion.connect();
       let consultaResultado = await SQLQuery(conexion, queries.existeElMail(mailAComprobar))
       conexion.end();
-      if(consultaResultado.length) rej('El mail ya existe')
+      if(consultaResultado.length) res('La direccion de E-mail ya existe en nuestros registros, intente con otra')
       res(false)
     } catch(err){
       console.log(`Error en la ejecucion de existeElMail: ${err}`)

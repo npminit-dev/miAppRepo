@@ -10,7 +10,7 @@ const cors_1 = __importDefault(require("cors"));
 const prods_1 = __importDefault(require("./routers/prods"));
 const cuenta_1 = __importDefault(require("./routers/cuenta"));
 const usuario_1 = __importDefault(require("./routers/usuario"));
-const archivos_1 = __importDefault(require("./routers/archivos"));
+// import archivosRouter from './routers/archivos'
 const morgan_1 = __importDefault(require("morgan"));
 const app = (0, express_2.default)();
 // utilidades del proyecto
@@ -47,6 +47,6 @@ app.use(accControlRouter);
 app.use(usuario_1.default);
 // usuario 7 jwt: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc3VhcmlvSUQiOjcsIkFsaWFzVXN1YXJpbyI6IkZyYW5jaXNGb3JkQ29wcG9sYSIsIk5vbWJyZXMiOiJGcmFuY2lzY28gSmF2aWVyIiwiQXBlbGxpZG8iOiJTY2h3YXJ0em1hbm4iLCJpYXQiOjE2ODQ2Mzk3NTIsImV4cCI6MTY4NTkzNTc1Mn0.-dpwKByxQIqsKSbkTUyrL6mqMoPvuNplja8vBZoJGaA
 // controladores de archivos
-app.use(archivos_1.default);
+// app.use(archivosRouter);
 app.listen(process.env.PORT || 3000);
 console.log(`App Express escuchando en el puerto ${process.env.PORT || 3000}`);

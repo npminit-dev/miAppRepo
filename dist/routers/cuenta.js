@@ -22,9 +22,11 @@ const registrar_Controlador = (req, res) => __awaiter(void 0, void 0, void 0, fu
             resultado = yield (0, consultasFuncts_1.registrar)(datosRegistro);
             res.status(200).send(resultado);
         }
+        else
+            res.status(409).send(JSON.stringify(validacion));
     }
     catch (err) {
-        res.status(409).send(err);
+        res.status(404).send(err);
     }
 });
 const iniciarSesion_Controlador = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
