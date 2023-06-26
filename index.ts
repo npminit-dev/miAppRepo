@@ -1,7 +1,7 @@
 import {Application, Router} from 'express';
 import dotenv from 'dotenv';
 import express from 'express'
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
 import prodsRouter from './routers/prods';
 import accControlFuncts from './routers/cuenta' 
 import usuarioRouter from './routers/usuario'
@@ -10,13 +10,26 @@ import morgan from 'morgan'
 
 const app: Application = express()
 
+// configurcion de los origenes permitidos
+// const origenesPermitidos = ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:3002']
+// const corsOpciones: CorsOptions = {
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   origin: (origen, llamada) => {
+//     console.log(origen)
+//     if(origenesPermitidos.some(permitidos => permitidos === origen)) llamada(null, true)
+//     else llamada(new Error('Origen de solicitud no permitido por el servidor!'))
+//   }
+// }
+
 // utilidades del proyecto
 dotenv.config({path: 'var_entorno.env'}) // variables de entorno
 app.use(morgan('dev')) // morgan para obtener informacion de las solicitudes
-app.use(cors()) // modo cors
+app.use(cors(/*corsOpciones*/)) // uso del modo cors con la configuracion especiicada
 app.use(express.json()) // permite interpretar JSON que provienen de las solicitudes 
 app.use(express.text()) // permite interpretar texto que provienen de las solicitudes 
 
+
+///* controladores *///
 
 // controladores sobre productos y reseñas (usuarios sin inicio de sesion)
 app.use(prodsRouter)
@@ -42,6 +55,7 @@ accControlRouter.post('/usuarios/misdatos', accControlFuncts.datosCuenta_Control
 ]
 */
 accControlRouter.put('/usuarios/modificar', accControlFuncts.modificarDatos_Controlador)
+accControlRouter.post('/usuarios/verificaralias', accControlFuncts.verificarAlias)
 app.use(accControlRouter)
 // tener en cuenta que al modificar los datos de usuario los tokens viejos pueden no volver a funcionar
 

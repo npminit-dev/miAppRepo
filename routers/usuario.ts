@@ -1,7 +1,7 @@
 import { RequestHandler, Router } from "express";
 import { jwt, carrito, prodAgregado } from '../interfaces&tuplas/tipos';
 import { verificarYDecodificarJWT } from "../mismodulos/utilidades";
-import { actualizarFechaModCarrito, agregarAlCarrito, existeLaPuntuacion, insertarComentario, insertarPuntuacion, miCarrito, miReseña, modificarComentario, modificarPuntuacion, obtenerTotalCarrito, vaciarCarrito, validacionComentario } from "../mismodulos/consultasFuncts";
+import { actualizarFechaModCarrito, agregarAlCarrito, borrarComentario, existeLaPuntuacion, insertarComentario, insertarPuntuacion, miCarrito, miReseña, modificarComentario, modificarPuntuacion, obtenerTotalCarrito, vaciarCarrito, validacionComentario } from "../mismodulos/consultasFuncts";
 
 const usuarioRouter: Router = Router();
 
@@ -98,6 +98,18 @@ usuarioRouter.put('/usuarios/comentar', (async (req: any, res: any) => {
     res.status(200).send(msj)
   } catch(err) {
     res.status(409).send(`Error: ${err}`)
+  }
+}) as RequestHandler)
+
+usuarioRouter.delete('/usuarios/eliminarcomentario', (async (req, res) => {
+  let datos: [string | jwt, number] = req.body
+  if(!datos) res.status(400).send('body de la peticion vacio')
+  try { 
+    datos[0] = await verificarYDecodificarJWT(datos[0] as string) as jwt;
+    let msj: string = await borrarComentario(...datos as [jwt, number])
+    res.status(200).send(msj)
+  } catch(err) {
+    res.status(400).send(`Error: ${err}`)
   }
 }) as RequestHandler)
 

@@ -60,17 +60,32 @@ const modificarDatos_Controlador = (req, res) => __awaiter(void 0, void 0, void 
     let jwtYNuevosDatos = req.body;
     try {
         jwtYNuevosDatos[0] = (yield (0, utilidades_1.verificarYDecodificarJWT)(jwtYNuevosDatos[0]));
-        jwtYNuevosDatos[1][2] = (0, utilidades_1.revertirFecha)((0, utilidades_1.agregarCeros)(jwtYNuevosDatos[1][2]));
-        yield (0, consultasFuncts_1.modificarMisDatos)(...jwtYNuevosDatos);
-        res.status(200).send('datos modificados');
+        jwtYNuevosDatos[1][3] = (0, utilidades_1.revertirFecha)((0, utilidades_1.agregarCeros)(jwtYNuevosDatos[1][3]));
+        let newjwt = yield (0, consultasFuncts_1.modificarMisDatos)(...jwtYNuevosDatos);
+        res.status(200).send(newjwt);
     }
     catch (err) {
         res.status(409).send(`Error ${err}`);
+    }
+});
+const verificarAlias = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        if (!req.body)
+            res.status(404).send('el body de la peticion se encuentra vacio');
+        let existe = yield (0, consultasFuncts_1.existeElAlias)(req.body);
+        if (existe === false)
+            res.status(200).send('false');
+        else
+            res.status(409).send(existe);
+    }
+    catch (error) {
+        res.status(404).send(`Error ${error}`);
     }
 });
 exports.default = {
     registrar_Controlador,
     iniciarSesion_Controlador,
     datosCuenta_Controlador,
-    modificarDatos_Controlador
+    modificarDatos_Controlador,
+    verificarAlias
 };

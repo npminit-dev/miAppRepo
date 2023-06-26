@@ -70,10 +70,10 @@ WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us
 // modificar mis datos
 // debemos reutilizar las funciones existeElAlias() y existeElMail() para verificar si el nuevo alias y el nuevo mail estan disponibles
 // una vez verificado hacemos el update de la tabla Usuarios (La contraseña y la fecha de registro no pueden modificarse por esta consulta)
-const modificarMisDatos = (UsuarioID, AliasUsuario, NombresUsuario, ApellidoUsuario, NNombres, NApellido, NFechaDeNacimiento, NEdad, NTelefono) => `
+const modificarMisDatos = (UsuarioID, AliasUsuario, NombresUsuario, ApellidoUsuario, NAlias, NNombres, NApellido, NFechaDeNacimiento, NEdad, NTelefono) => `
 BEGIN;
-UPDATE Usuario SET Nombres = '${NNombres}', Apellido = '${NApellido}', 
-FechaDeNAcimiento = '${NFechaDeNacimiento}', Edad = ${NEdad}, Telefono = '${NTelefono}'
+UPDATE Usuario SET AliasUsuario = '${NAlias}', Nombres = '${NNombres}', Apellido = '${NApellido}', 
+FechaDeNacimiento = '${NFechaDeNacimiento}', Edad = ${NEdad}, Telefono = '${NTelefono}'
 WHERE UsuarioID = ${UsuarioID} AND AliasUsuario = '${AliasUsuario}' AND Nombres = '${NombresUsuario}' AND Apellido = '${ApellidoUsuario}'; 
 COMMIT;`;
 // obtener carrito
@@ -158,6 +158,25 @@ SET Cuerpo = '${Comentario}'
 WHERE punt.UsuarioID = ${UsuarioID} AND punt.ProductoID = ${ProductoID};
 COMMIT;`;
 // Si validacionComentario devuelve una consulta vacia, la puntuacion no existe, por lo que no se puede comentar ni modificar un comentario
+// borrar comentario
+const borrarComentario = (UsuarioID, AliasUsuario, Nombres, Apellido, ProductoID) => `
+BEGIN;
+SET FOREIGN_KEY_CHECKS = 0;
+DELETE FROM Comentario
+WHERE ComentarioID IN (SELECT * FROM
+(SELECT com.ComentarioID FROM Comentario com, Puntuacion punt
+LEFT JOIN Usuario us ON punt.UsuarioID = us.UsuarioID
+WHERE com.ComentarioID = punt.ComentarioID
+AND us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}'
+AND us.Apellido = '${Apellido}' AND punt.ProductoID = ${ProductoID}) coms);
+SET FOREIGN_KEY_CHECKS = 1;
+COMMIT;
+UPDATE Puntuacion punt
+INNER JOIN Usuario us ON
+punt.UsuarioID = us.UsuarioID
+SET ComentarioID = NULL
+WHERE us.UsuarioID = ${UsuarioID} AND us.AliasUsuario = '${AliasUsuario}' AND us.Nombres = '${Nombres}'
+AND us.Apellido = '${Apellido}' AND punt.ProductoID = ${ProductoID};`;
 exports.default = {
     prodsPorDefecto,
     prodsPorNombreAsc,
@@ -188,4 +207,5 @@ exports.default = {
     validacionComentario,
     comentarioNuevo,
     modificarComentario,
+    borrarComentario
 };

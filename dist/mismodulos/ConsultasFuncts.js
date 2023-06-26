@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.modificarComentario = exports.insertarComentario = exports.validacionComentario = exports.modificarPuntuacion = exports.insertarPuntuacion = exports.existeLaPuntuacion = exports.miReseña = exports.actualizarFechaModCarrito = exports.vaciarCarrito = exports.agregarAlCarrito = exports.obtenerTotalCarrito = exports.miCarrito = exports.modificarMisDatos = exports.obtenerMisDatos = exports.iniciarSesion = exports.registrar = exports.existeElMail = exports.existeElAlias = exports.reseñasDesc = exports.reseñasAsc = exports.prodsPorCatDesc = exports.prodsPorCatAsc = exports.prodsPorPrecioDesc = exports.prodsPorPrecioAsc = exports.prodsPorNombreDesc = exports.prodsPorNombreAsc = exports.prodsPorDefecto = void 0;
+exports.borrarComentario = exports.modificarComentario = exports.insertarComentario = exports.validacionComentario = exports.modificarPuntuacion = exports.insertarPuntuacion = exports.existeLaPuntuacion = exports.miReseña = exports.actualizarFechaModCarrito = exports.vaciarCarrito = exports.agregarAlCarrito = exports.obtenerTotalCarrito = exports.miCarrito = exports.modificarMisDatos = exports.obtenerMisDatos = exports.iniciarSesion = exports.registrar = exports.existeElMail = exports.existeElAlias = exports.reseñasDesc = exports.reseñasAsc = exports.prodsPorCatDesc = exports.prodsPorCatAsc = exports.prodsPorPrecioDesc = exports.prodsPorPrecioAsc = exports.prodsPorNombreDesc = exports.prodsPorNombreAsc = exports.prodsPorDefecto = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 const queries_1 = __importDefault(require("./queries"));
 const utilidades_1 = require("./utilidades");
@@ -269,7 +269,7 @@ function modificarMisDatos(datos, nuevosDatos) {
                 res(newjwt);
             }
             catch (err) {
-                rej(`Error en la ejecucion de modificarMisDatos: ${err}`);
+                rej(err);
             }
         }));
     });
@@ -502,3 +502,20 @@ function modificarComentario(datos, productoID, comentario) {
     });
 }
 exports.modificarComentario = modificarComentario;
+function borrarComentario(datos, productoID) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((res, rej) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const conexion = (0, utilidades_1.crearConexionDB)('multiple');
+                conexion.connect();
+                yield (0, utilidades_1.SQLQuery)(conexion, queries_1.default.borrarComentario(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido, productoID));
+                conexion.end();
+                res('comentario eliminado');
+            }
+            catch (err) {
+                rej(`Error en al ejecucion de borrarComentario: ${err}`);
+            }
+        }));
+    });
+}
+exports.borrarComentario = borrarComentario;

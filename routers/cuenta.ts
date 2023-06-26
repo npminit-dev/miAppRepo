@@ -45,11 +45,22 @@ const modificarDatos_Controlador = async (req: any, res: any) => {
   let jwtYNuevosDatos: [any, tuplaNuevosDatos] = req.body;
   try {
     jwtYNuevosDatos[0] = await verificarYDecodificarJWT(jwtYNuevosDatos[0]) as jwt
-    jwtYNuevosDatos[1][2] = revertirFecha(agregarCeros(jwtYNuevosDatos[1][2]))
-    await modificarMisDatos(...jwtYNuevosDatos)
-    res.status(200).send('datos modificados')
+    jwtYNuevosDatos[1][3] = revertirFecha(agregarCeros(jwtYNuevosDatos[1][3]))
+    let newjwt = await modificarMisDatos(...jwtYNuevosDatos)
+    res.status(200).send(newjwt)
   } catch(err) {
     res.status(409).send(`Error ${err}`)
+  }
+}
+
+const verificarAlias = async (req: any, res: any) => {
+  try {
+    if(!req.body) res.status(404).send('el body de la peticion se encuentra vacio')
+    let existe: boolean | string = await existeElAlias(req.body)
+    if(existe === false) res.status(200).send('false')
+    else res.status(409).send(existe)
+  } catch(error) {
+    res.status(404).send(`Error ${error}`)
   }
 }
 
@@ -57,6 +68,7 @@ export default {
   registrar_Controlador,
   iniciarSesion_Controlador,
   datosCuenta_Controlador,
-  modificarDatos_Controlador
+  modificarDatos_Controlador,
+  verificarAlias
 }
 

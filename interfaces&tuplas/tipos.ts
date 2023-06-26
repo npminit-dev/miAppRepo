@@ -86,7 +86,7 @@ export interface datosRegistro {
   Contraseña: string
 }
 
-export type tuplaNuevosDatos = [string, string, string, number, string]
+export type tuplaNuevosDatos = [string, string, string, string, number, string]
 
 export interface puntuacion {
   Puntuacion: number

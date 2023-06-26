@@ -13,12 +13,23 @@ const usuario_1 = __importDefault(require("./routers/usuario"));
 // import archivosRouter from './routers/archivos'
 const morgan_1 = __importDefault(require("morgan"));
 const app = (0, express_2.default)();
+// configurcion de los origenes permitidos
+// const origenesPermitidos = ['http://localhost:8080', 'http://localhost:3000', 'http://localhost:3002']
+// const corsOpciones: CorsOptions = {
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   origin: (origen, llamada) => {
+//     console.log(origen)
+//     if(origenesPermitidos.some(permitidos => permitidos === origen)) llamada(null, true)
+//     else llamada(new Error('Origen de solicitud no permitido por el servidor!'))
+//   }
+// }
 // utilidades del proyecto
 dotenv_1.default.config({ path: 'var_entorno.env' }); // variables de entorno
 app.use((0, morgan_1.default)('dev')); // morgan para obtener informacion de las solicitudes
-app.use((0, cors_1.default)()); // modo cors
+app.use((0, cors_1.default)( /*corsOpciones*/)); // uso del modo cors con la configuracion especiicada
 app.use(express_2.default.json()); // permite interpretar JSON que provienen de las solicitudes 
 app.use(express_2.default.text()); // permite interpretar texto que provienen de las solicitudes 
+///* controladores *///
 // controladores sobre productos y reseñas (usuarios sin inicio de sesion)
 app.use(prods_1.default);
 // controladores sobre creacion, sesion, modificacion de cuentas y datos de cuentas
@@ -41,6 +52,7 @@ accControlRouter.post('/usuarios/misdatos', cuenta_1.default.datosCuenta_Control
 ]
 */
 accControlRouter.put('/usuarios/modificar', cuenta_1.default.modificarDatos_Controlador);
+accControlRouter.post('/usuarios/verificaralias', cuenta_1.default.verificarAlias);
 app.use(accControlRouter);
 // tener en cuenta que al modificar los datos de usuario los tokens viejos pueden no volver a funcionar
 // controladores de carrito, producto y reseñas

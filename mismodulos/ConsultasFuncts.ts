@@ -229,7 +229,7 @@ export async function modificarMisDatos(datos: jwt, nuevosDatos: tuplaNuevosDato
       let newjwt = await crearJWT(newJwtData);
       res(newjwt);
     } catch (err) {
-      rej(`Error en la ejecucion de modificarMisDatos: ${err}`)
+      rej(err)
     }
   })
 }
@@ -411,6 +411,20 @@ export async function modificarComentario(datos: jwt, productoID: number, coment
       res('comentario modificado')
     } catch(err) {
       rej(`Error en la ejecucion de modificarComentario: ${err}`)
+    }
+  })
+}
+
+export async function borrarComentario(datos: jwt, productoID: number): Promise<string> {
+  return new Promise(async (res, rej) => {
+    try {
+      const conexion = crearConexionDB('multiple')
+      conexion.connect();
+      await SQLQuery(conexion, queries.borrarComentario(datos.UsuarioID, datos.AliasUsuario, datos.Nombres, datos.Apellido, productoID))  
+      conexion.end()
+      res('comentario eliminado')
+    } catch(err) {
+      rej(`Error en al ejecucion de borrarComentario: ${err}`)
     }
   })
 }

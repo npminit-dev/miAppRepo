@@ -104,4 +104,17 @@ usuarioRouter.put('/usuarios/comentar', ((req, res) => __awaiter(void 0, void 0,
         res.status(409).send(`Error: ${err}`);
     }
 })));
+usuarioRouter.delete('/usuarios/eliminarcomentario', ((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    let datos = req.body;
+    if (!datos)
+        res.status(400).send('body de la peticion vacio');
+    try {
+        datos[0] = (yield (0, utilidades_1.verificarYDecodificarJWT)(datos[0]));
+        let msj = yield (0, consultasFuncts_1.borrarComentario)(...datos);
+        res.status(200).send(msj);
+    }
+    catch (err) {
+        res.status(400).send(`Error: ${err}`);
+    }
+})));
 exports.default = usuarioRouter;
